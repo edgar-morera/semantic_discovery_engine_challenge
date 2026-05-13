@@ -7,9 +7,6 @@ CHALLENGE.md
 /web/.env.local.php
 /web/.env.*.local
 
-# Doctrine migrations (generated)
-/web/migrations/
-
 # PHPUnit local override
 /web/phpunit.xml
 

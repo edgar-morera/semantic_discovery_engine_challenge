@@ -9,3 +9,6 @@ services:
         exclude:
             - '../src/Kernel.php'
             - '../src/*/Domain/'
+
+    App\Product\Domain\Repository\ProductRepository:
+        alias: App\Product\Infrastructure\Persistence\Doctrine\DoctrineProductRepository

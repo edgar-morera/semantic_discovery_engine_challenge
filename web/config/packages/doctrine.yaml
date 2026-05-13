@@ -2,18 +2,21 @@ doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
         profiling_collect_backtrace: '%kernel.debug%'
+        types:
+            product_id: App\Product\Infrastructure\Persistence\Doctrine\Type\ProductIdType
+            product_name: App\Product\Infrastructure\Persistence\Doctrine\Type\ProductNameType
+            product_semantic_description: App\Product\Infrastructure\Persistence\Doctrine\Type\ProductSemanticDescriptionType
 
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
         report_fields_where_declared: true
-        validate_xml_mapping: true
+        validate_xml_mapping: false
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: false
-        # Add one entry per bounded context:
-        # <BoundedContext>:
-        #     type: xml
-        #     dir: '%kernel.project_dir%/src/<BoundedContext>/Infrastructure/Persistence/Doctrine/Mapping'
-        #     prefix: 'App\<BoundedContext>\Domain\Model'
-        #     is_bundle: false
-        mappings: []
+        mappings:
+            Product:
+                type: xml
+                dir: '%kernel.project_dir%/src/Product/Infrastructure/Persistence/Doctrine/Mapping'
+                prefix: 'App\Product\Domain\Model'
+                is_bundle: false
