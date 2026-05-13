@@ -12,3 +12,16 @@ services:
 
     App\Product\Domain\Repository\ProductRepository:
         alias: App\Product\Infrastructure\Persistence\Doctrine\DoctrineProductRepository
+    App\Product\Domain\Port\EmbeddingService:
+        alias: App\Product\Infrastructure\External\HuggingFaceEmbeddingService
+
+    App\Product\Domain\Repository\ProductSearchRepository:
+        alias: App\Product\Infrastructure\Persistence\Qdrant\QdrantProductSearchRepository
+
+    App\Product\Infrastructure\External\HuggingFaceEmbeddingService:
+        arguments:
+            $apiKey: '%env(HUGGINGFACE_API_KEY)%'
+
+    App\Product\Infrastructure\Persistence\Qdrant\QdrantProductSearchRepository:
+        arguments:
+            $qdrantDsn: '%env(QDRANT_DSN)%'

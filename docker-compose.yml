@@ -7,6 +7,10 @@ services:
     restart: unless-stopped
     volumes:
       - ./web:/var/www/html
+    environment:
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY}
+      QDRANT_DSN: ${QDRANT_DSN}
+      DATABASE_URL: ${DATABASE_URL}
     networks:
       - app_network
     depends_on:
