@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Product\Infrastructure\Persistence\Qdrant;
 
 use App\Product\Domain\Model\Product;
-use App\Product\Domain\Repository\ProductSearchRepository;
+use App\Product\Domain\Port\ProductSearchPort;
 use App\Product\Domain\ValueObject\Embedding;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class QdrantProductSearchRepository implements ProductSearchRepository
+final class QdrantProductSearchRepository implements ProductSearchPort
 {
     private const string COLLECTION = 'products';
 

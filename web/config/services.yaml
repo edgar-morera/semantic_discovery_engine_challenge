@@ -15,7 +15,7 @@ services:
     App\Product\Domain\Port\EmbeddingService:
         alias: App\Product\Infrastructure\External\HuggingFaceEmbeddingService
 
-    App\Product\Domain\Repository\ProductSearchRepository:
+    App\Product\Domain\Port\ProductSearchPort:
         alias: App\Product\Infrastructure\Persistence\Qdrant\QdrantProductSearchRepository
 
     App\Product\Infrastructure\External\HuggingFaceEmbeddingService:

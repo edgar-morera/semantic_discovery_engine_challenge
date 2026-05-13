@@ -10,7 +10,7 @@ use App\Product\Domain\Exception\ProductNotFoundException;
 use App\Product\Domain\Model\Product;
 use App\Product\Domain\Port\EmbeddingService;
 use App\Product\Domain\Repository\ProductRepository;
-use App\Product\Domain\Repository\ProductSearchRepository;
+use App\Product\Domain\Port\ProductSearchPort;
 use App\Product\Domain\ValueObject\Embedding;
 use App\Product\Domain\ValueObject\ProductId;
 use App\Product\Domain\ValueObject\ProductName;
@@ -24,14 +24,14 @@ final class IndexProductCommandHandlerTest extends TestCase
 
     private ProductRepository&MockObject $productRepository;
     private EmbeddingService&MockObject $embeddingService;
-    private ProductSearchRepository&MockObject $productSearchRepository;
+    private ProductSearchPort&MockObject $productSearchRepository;
     private IndexProductCommandHandler $handler;
 
     protected function setUp(): void
     {
         $this->productRepository      = $this->createMock(ProductRepository::class);
         $this->embeddingService       = $this->createMock(EmbeddingService::class);
-        $this->productSearchRepository = $this->createMock(ProductSearchRepository::class);
+        $this->productSearchRepository = $this->createMock(ProductSearchPort::class);
 
         $this->handler = new IndexProductCommandHandler(
             $this->productRepository,
