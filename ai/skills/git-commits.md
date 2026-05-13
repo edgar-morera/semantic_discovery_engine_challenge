@@ -24,39 +24,57 @@
 
 ## Trazabilidad IA (obligatoria)
 
-Cada commit debe indicar en el footer el nivel de participación de la IA:
+Cada commit debe indicar en el footer el nivel de participación de la IA.
+Cuando hay trabajo mixto, desglosar explícitamente qué hizo cada parte:
 
 | Footer | Significado |
 |---|---|
-| `AI-collab` | La IA generó el grueso, revisado y validado por el dev |
-| `AI-pair` | Desarrollo conjunto, criterio compartido |
-| `AI-rejected: <motivo>` | La IA propuso algo concreto que fue descartado |
-| `AI-ignored` | Desarrollo 100% propio sin asistencia |
+| `AI-collab` | La IA generó el grueso; el dev revisó, validó y tomó decisiones de diseño. Desglosar si hay contribuciones diferenciadas (ver formato extendido). |
+| `AI-pair` | Desarrollo conjunto; criterio compartido en cada decisión. |
+| `AI-rejected: <motivo>` | La IA propuso algo concreto que fue descartado. |
+| `AI-ignored` | Desarrollo 100% propio sin asistencia. |
+
+### Formato extendido (cuando hay contribuciones diferenciadas)
+
+Usar cuando la IA y el dev aportaron partes distinguibles:
+
+```
+AI-collab
+AI: <qué generó la IA>
+Dev: <qué decidió/diseñó/corrigió el dev>
+```
 
 ## Ejemplos
 
 ```
-feat(domain): add ProductId value object
+feat: add ProductId value object
 
 AI-ignored
 ```
 
 ```
-chore(docker): add PHP-FPM + Nginx + MySQL + Qdrant stack
+chore: add PHP-FPM + Nginx + MySQL + Qdrant stack
 
 AI-collab
+AI: generated docker-compose base and Nginx/PHP-FPM config
+Dev: chose versions, added Qdrant, adjusted ports and volumes
 ```
 
 ```
-feat(domain): add Money value object with EUR precision
+feat: add Money value object with EUR precision
 
+AI-collab
+AI: generated VO with validation and arithmetic operations
+Dev: rejected float for amount, enforced int (cents) as type
 AI-rejected: AI suggested float for amount, used int (cents) instead
 ```
 
 ```
-test(application): add unit tests for IndexProductCommandHandler
+test: add unit tests for IndexProductCommandHandler
 
 AI-pair
+AI: structured test cases and mocks
+Dev: defined the business scenarios to cover
 ```
 
 ## Reglas adicionales
