@@ -1,5 +1,13 @@
 # Convenciones del Proyecto — Semantic Discovery Engine
 
+## Descripción del proyecto
+Desarrollo de un motor de búsqueda semántica para productos, aplicando Arquitectura Hexagonal, DDD y CQRS, con trazabilidad de la colaboración con IA.
+
+## Requerimientos del proyecto
+- Un endpoint para **crear productos** con campos básicos (nombre y descripción semántica).
+- Un endpoint para **indexar productos** (generación de embeddings simple mediante API externa).
+- Un **endpoint de búsqueda** que devuelva productos ordenados por relevancia semántica.
+
 ## Stack técnico
 - PHP 8.3 + Symfony 7
 - MySQL 8
@@ -17,6 +25,7 @@ src/
     │   ├── Model/
     │   ├── ValueObject/
     │   ├── Repository/
+    │   ├── Port/             # outbound port interfaces (e.g. EmbeddingService)
     │   └── Event/
     ├── Application/
     │   └── <UseCaseName>/
