@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Product\Domain\Model;
 
+use App\Product\Domain\ValueObject\Embedding;
 use App\Product\Domain\ValueObject\ProductId;
 use App\Product\Domain\ValueObject\ProductName;
 use App\Product\Domain\ValueObject\ProductSemanticDescription;
 
 final class Product
 {
+    private ?Embedding $embedding = null;
+
     private function __construct(
         private readonly ProductId $productId,
         private readonly ProductName $productName,
@@ -37,5 +40,20 @@ final class Product
     public function semanticDescription(): ProductSemanticDescription
     {
         return $this->semanticDescription;
+    }
+
+    public function assignEmbedding(Embedding $embedding): void
+    {
+        $this->embedding = $embedding;
+    }
+
+    public function isIndexed(): bool
+    {
+        return $this->embedding !== null;
+    }
+
+    public function embedding(): ?Embedding
+    {
+        return $this->embedding;
     }
 }
