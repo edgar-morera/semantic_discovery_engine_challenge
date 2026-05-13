@@ -7,6 +7,7 @@ namespace App\Product\Infrastructure\Persistence\Qdrant;
 use App\Product\Domain\Model\Product;
 use App\Product\Domain\Port\ProductSearchPort;
 use App\Product\Domain\ValueObject\Embedding;
+use App\Product\Domain\ValueObject\SearchResult;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class QdrantProductSearchRepository implements ProductSearchPort
@@ -43,8 +44,12 @@ final class QdrantProductSearchRepository implements ProductSearchPort
         )->getStatusCode();
     }
 
-    private function ensureCollectionExists(): void
+    public function search(Embedding $query, int $limit): array
     {
+        throw new \LogicException('Not implemented yet — will be completed in Phase 5c.');
+    }
+
+    private function ensureCollectionExists(): void    {
         $statusCode = $this->httpClient->request(
             'GET',
             $this->qdrantDsn . '/collections/' . self::COLLECTION,
