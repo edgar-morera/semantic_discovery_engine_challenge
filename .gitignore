@@ -1,1 +1,28 @@
 CHALLENGE.md
+
+# Symfony (inside web/)
+/web/var/
+/web/vendor/
+/web/.env.local
+/web/.env.local.php
+/web/.env.*.local
+
+# Doctrine migrations (generated)
+/web/migrations/
+
+# PHPUnit local override
+/web/phpunit.xml
+
+# IDE
+/.idea/
+/.vscode/
+*.sw?
+
+# OS
+.DS_Store
+
+# Docker data (bind mounts — never commit actual DB data)
+.docker/mysql/data/*
+.docker/qdrant/data/*
+!.docker/mysql/data/.gitkeep
+!.docker/qdrant/data/.gitkeep
