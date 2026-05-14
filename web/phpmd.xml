@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<ruleset name="Semantic Discovery Engine"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <description>PHPMD ruleset for DDD/Hexagonal Symfony project</description>
+
+    <!-- Cyclomatic complexity, NPath, excessive length -->
+    <rule ref="rulesets/codesize.xml">
+        <!-- Allow slightly longer classes given DDD verbosity -->
+        <exclude name="TooManyPublicMethods"/>
+    </rule>
+
+    <!-- Coupling between objects -->
+    <rule ref="rulesets/design.xml"/>
+
+    <!-- Unused variables, parameters, private fields -->
+    <rule ref="rulesets/unusedcode.xml">
+        <!-- Doctrine Type interface requires $platform even when unused -->
+        <exclude name="UnusedFormalParameter"/>
+    </rule>
+
+    <!-- Naming conventions -->
+    <rule ref="rulesets/naming.xml">
+        <!-- Short variable names like $id, $e are acceptable -->
+        <exclude name="ShortVariable"/>
+        <!-- DDD naming tends to be verbose by design -->
+        <exclude name="LongVariable"/>
+        <exclude name="LongClassName"/>
+    </rule>
+</ruleset>
