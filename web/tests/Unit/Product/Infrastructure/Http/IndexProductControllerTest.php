@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Product\Infrastructure\Http;
 
 use App\Product\Application\IndexProduct\IndexProductCommand;
-use App\Product\Domain\Exception\ProductNotFoundException;
 use App\Product\Infrastructure\Http\IndexProductController;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -26,7 +25,7 @@ final class IndexProductControllerTest extends TestCase
         $this->controller = new IndexProductController($this->commandBus);
     }
 
-    public function testReturns204WhenProductIsIndexed(): void
+    public function testReturns202WhenIndexingIsEnqueued(): void
     {
         $this->commandBus
             ->expects($this->once())
@@ -36,17 +35,6 @@ final class IndexProductControllerTest extends TestCase
 
         $response = ($this->controller)(self::VALID_UUID);
 
-        $this->assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
-    }
-
-    public function testReturns404WhenProductNotFound(): void
-    {
-        $this->commandBus
-            ->method('dispatch')
-            ->willThrowException(new ProductNotFoundException(self::VALID_UUID));
-
-        $response = ($this->controller)(self::VALID_UUID);
-
-        $this->assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+        $this->assertSame(Response::HTTP_ACCEPTED, $response->getStatusCode());
     }
 }

@@ -1,6 +1,14 @@
 framework:
     messenger:
         default_bus: command.bus
+        transports:
+            async:
+                dsn: '%env(REDIS_DSN)%'
+                options:
+                    stream: messenger_index_product
+                    group: index_product
+        routing:
+            App\Product\Application\IndexProduct\IndexProductCommand: async
         buses:
             command.bus:
                 middleware:

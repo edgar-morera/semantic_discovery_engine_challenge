@@ -74,6 +74,30 @@ services:
     networks:
       - app_network
 
+  worker:
+    build:
+      context: .
+      dockerfile: .docker/php/Dockerfile
+    container_name: semantic_worker
+    restart: unless-stopped
+    command: ["php", "bin/console", "messenger:consume", "async", "--time-limit=3600", "--memory-limit=128M"]
+    volumes:
+      - ./web:/var/www/html
+    environment:
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY}
+      QDRANT_DSN: ${QDRANT_DSN}
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_DSN: ${REDIS_DSN}
+    networks:
+      - app_network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+      redis:
+        condition: service_started
+
   k6:
     image: grafana/k6:latest
     profiles:
