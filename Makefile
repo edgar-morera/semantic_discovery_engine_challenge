@@ -1,21 +1,28 @@
 PHP     = docker compose exec php
 CONSOLE = $(PHP) php bin/console
 
-.PHONY: help build up stop remove seed-products test test-unit lint cs cs-fix stan deptrac phpmd analyse k6-smoke k6-load k6-stress
+.PHONY: help init rebuild up restart stop remove seed-products test test-unit lint cs cs-fix stan deptrac phpmd analyse k6-smoke k6-load k6-stress
 
 ## —— Help ————————————————————————————————————————————————————————————————————
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
 ## —— Docker ——————————————————————————————————————————————————————————————————
-build: ## First-time setup: copy .env, build images, run migrations and seed
+init: ## First-time setup: copy .env, build images, run migrations and seed
 	cp .env.example .env
-	docker compose up build --no-cache
+	docker compose up --build -d
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction
 	$(CONSOLE) app:seed:siroko-products
 
+rebuild: ## Rebuild Docker images
+	docker compose stop
+	docker compose up --build -d
+
 up: ## Start all services in background
 	docker compose up -d
+
+restart: ## Restart all services
+	docker compose up --recreate -d
 
 stop: ## Stop all services (keeps volumes)
 	docker compose stop
@@ -31,8 +38,8 @@ seed-products: ## Import 357 Siroko products into MySQL
 test: ## Run all PHPUnit tests
 	$(PHP) php vendor/bin/phpunit
 
-test-unit: ## Run only the unit test suite
-	$(PHP) php vendor/bin/phpunit --testsuite unit
+test-with-coverage: ## Run all PHPUnit tests with coverage
+	$(PHP) php -d pcov.enabled=1 vendor/bin/phpunit --coverage-text
 
 ## —— Code quality —————————————————————————————————————————————————————————————
 lint: ## Check PHP syntax errors
