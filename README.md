@@ -128,6 +128,8 @@ make build
 make up
 ```
 
+Una vez hecho el build del proyecto, hay que setear la variable de entorno `HUGGINGFACE_API_KEY=HUGGINGFACE_API_KEY` por un token válido de HuggingFace y ejecutar `make restart` para recrear los contenedores.
+
 El worker de Messenger arranca automáticamente como servicio (`semantic_worker`) y procesa la cola de indexación en background.
 
 Se pueden cargar productos de ejemplo. Aunque este proceso puede tardar unos minutos ya que tiene que inserta 350 productos y generar los embeddings:
