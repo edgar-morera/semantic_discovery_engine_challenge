@@ -1,44 +1,66 @@
-PHP  = docker compose exec php
+PHP     = docker compose exec php
 CONSOLE = $(PHP) php bin/console
 
-.PHONY: test test-unit seed-products lint cs cs-fix stan deptrac phpmd analyse k6-smoke k6-load k6-stress
+.PHONY: help build up stop remove seed-products test test-unit lint cs cs-fix stan deptrac phpmd analyse k6-smoke k6-load k6-stress
 
-seed-products:
+## —— Help ————————————————————————————————————————————————————————————————————
+help: ## Show this help
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+
+## —— Docker ——————————————————————————————————————————————————————————————————
+build: ## First-time setup: copy .env, build images, run migrations and seed
+	cp .env.example .env
+	docker compose up build --no-cache
+	$(CONSOLE) doctrine:migrations:migrate --no-interaction
 	$(CONSOLE) app:seed:siroko-products
 
-## Static analysis & code quality
-lint:
-	$(PHP) php -l src
+up: ## Start all services in background
+	docker compose up -d
 
-cs:
-	$(PHP) php vendor/bin/php-cs-fixer check --diff
+stop: ## Stop all services (keeps volumes)
+	docker compose stop
 
-cs-fix:
-	$(PHP) php vendor/bin/php-cs-fixer fix
+remove: ## Stop and remove all containers, volumes and images
+	docker compose down --volumes --rmi all
 
-stan:
-	$(PHP) php -d memory_limit=512M vendor/bin/phpstan analyse
+## —— Database ————————————————————————————————————————————————————————————————
+seed-products: ## Import 357 Siroko products into MySQL
+	$(CONSOLE) app:seed:siroko-products
 
-deptrac:
-	$(PHP) php vendor/bin/deptrac analyse --config-file=deptrac.yaml
-
-phpmd:
-	$(PHP) php vendor/bin/phpmd src text phpmd.xml
-
-analyse: cs stan deptrac phpmd
-
-## Performance testing
-k6-smoke:
-	docker compose --profile k6 run --rm k6 run /scripts/smoke.js
-
-k6-load:
-	docker compose --profile k6 run --rm -e BASE_URL=http://nginx k6 run --out json=/scripts/results/load.json /scripts/load.js
-
-k6-stress:
-	docker compose --profile k6 run --rm -e BASE_URL=http://nginx k6 run --out json=/scripts/results/stress.json /scripts/stress.js
-
-test:
+## —— Tests ———————————————————————————————————————————————————————————————————
+test: ## Run all PHPUnit tests
 	$(PHP) php vendor/bin/phpunit
 
-test-unit:
+test-unit: ## Run only the unit test suite
 	$(PHP) php vendor/bin/phpunit --testsuite unit
+
+## —— Code quality —————————————————————————————————————————————————————————————
+lint: ## Check PHP syntax errors
+	$(PHP) php -l src
+
+cs: ## Check code style (PHP CS Fixer, dry-run)
+	$(PHP) php vendor/bin/php-cs-fixer check --diff
+
+cs-fix: ## Fix code style automatically
+	$(PHP) php vendor/bin/php-cs-fixer fix
+
+stan: ## Run PHPStan static analysis (level 8)
+	$(PHP) php -d memory_limit=512M vendor/bin/phpstan analyse
+
+deptrac: ## Check layer dependencies (Domain / Application / Infrastructure)
+	$(PHP) php vendor/bin/deptrac analyse --config-file=deptrac.yaml
+
+phpmd: ## Run PHP Mess Detector
+	$(PHP) php vendor/bin/phpmd src text phpmd.xml
+
+analyse: cs stan deptrac phpmd ## Run all static analysis tools
+
+## —— Performance —————————————————————————————————————————————————————————————
+k6-smoke: ## Smoke test: 1 VU, 10 iterations across all endpoints
+	docker compose --profile k6 run --rm k6 run /scripts/smoke.js
+
+k6-load: ## Load test: 10 VUs for 60s on GET /products/search
+	docker compose --profile k6 run --rm -e BASE_URL=http://nginx k6 run --out json=/scripts/results/load.json /scripts/load.js
+
+k6-stress: ## Stress test: ramp 1 to 50 VUs on GET /products/search
+	docker compose --profile k6 run --rm -e BASE_URL=http://nginx k6 run --out json=/scripts/results/stress.json /scripts/stress.js
