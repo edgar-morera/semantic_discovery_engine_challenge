@@ -25,3 +25,4 @@ CHALLENGE.md
 !.docker/qdrant/data/.gitkeep
 # k6 results
 /k6/results/
+.env
