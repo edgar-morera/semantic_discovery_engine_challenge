@@ -66,6 +66,17 @@ services:
     networks:
       - app_network
 
+  k6:
+    image: grafana/k6:latest
+    profiles:
+      - k6
+    volumes:
+      - ./k6:/scripts
+    networks:
+      - app_network
+    depends_on:
+      - nginx
+
 networks:
   app_network:
     driver: bridge

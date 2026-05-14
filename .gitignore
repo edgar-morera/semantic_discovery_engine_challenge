@@ -23,5 +23,5 @@ CHALLENGE.md
 .docker/qdrant/data/*
 !.docker/mysql/data/.gitkeep
 !.docker/qdrant/data/.gitkeep
-web/.editorconfig
-web/.phpunit.result.cache
+# k6 results
+/k6/results/
