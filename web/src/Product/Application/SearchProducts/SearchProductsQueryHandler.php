@@ -17,7 +17,8 @@ final class SearchProductsQueryHandler
         private readonly EmbeddingService $embeddingService,
         private readonly ProductSearchPort $productSearchPort,
         private readonly ProductRepository $productRepository,
-    ) {}
+    ) {
+    }
 
     /**
      * @return SearchProductsResponse[]

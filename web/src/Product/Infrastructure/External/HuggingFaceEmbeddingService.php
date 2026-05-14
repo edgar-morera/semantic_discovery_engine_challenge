@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Product\Infrastructure\External;
 
-use App\Product\Domain\Exception\InvalidEmbeddingException;
 use App\Product\Domain\Port\EmbeddingService;
 use App\Product\Domain\ValueObject\Embedding;
 use App\Product\Domain\ValueObject\ProductSemanticDescription;
@@ -17,14 +16,15 @@ final class HuggingFaceEmbeddingService implements EmbeddingService
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly string $apiKey,
-    ) {}
+    ) {
+    }
 
     public function generate(ProductSemanticDescription $description): Embedding
     {
         $response = $this->httpClient->request('POST', self::API_URL, [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->apiKey,
-                'Content-Type'  => 'application/json',
+                'Authorization' => 'Bearer '.$this->apiKey,
+                'Content-Type' => 'application/json',
             ],
             'json' => [
                 'inputs' => $description->value(),
@@ -35,7 +35,7 @@ final class HuggingFaceEmbeddingService implements EmbeddingService
 
         // Flat array of floats: [0.1, 0.2, ...]
         if (isset($body[0]) && is_float($body[0])) {
-            /** @var float[] $body */
+            /* @var float[] $body */
             return new Embedding($body);
         }
 
@@ -43,6 +43,7 @@ final class HuggingFaceEmbeddingService implements EmbeddingService
         if (isset($body[0]) && is_array($body[0])) {
             /** @var float[] $vector */
             $vector = $body[0];
+
             return new Embedding($vector);
         }
 

@@ -9,5 +9,6 @@ final readonly class SearchProductsQuery
     public function __construct(
         public string $queryText,
         public int $limit = 10,
-    ) {}
+    ) {
+    }
 }

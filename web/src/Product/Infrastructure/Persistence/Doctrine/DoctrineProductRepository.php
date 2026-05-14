@@ -11,7 +11,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class DoctrineProductRepository implements ProductRepository
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager) {}
+    public function __construct(private readonly EntityManagerInterface $entityManager)
+    {
+    }
 
     public function save(Product $product): void
     {

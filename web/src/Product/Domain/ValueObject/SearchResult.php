@@ -9,5 +9,6 @@ final readonly class SearchResult
     public function __construct(
         public ProductId $productId,
         public float $score,
-    ) {}
+    ) {
+    }
 }

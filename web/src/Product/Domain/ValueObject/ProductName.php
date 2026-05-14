@@ -14,14 +14,12 @@ final class ProductName
     {
         $trimmed = trim($value);
 
-        if ($trimmed === '') {
+        if ('' === $trimmed) {
             throw new InvalidProductNameException('Product name cannot be empty.');
         }
 
         if (mb_strlen($trimmed) > self::MAX_LENGTH) {
-            throw new InvalidProductNameException(
-                sprintf('Product name cannot exceed %d characters.', self::MAX_LENGTH)
-            );
+            throw new InvalidProductNameException(sprintf('Product name cannot exceed %d characters.', self::MAX_LENGTH));
         }
     }
 

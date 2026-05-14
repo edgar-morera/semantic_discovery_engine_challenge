@@ -15,7 +15,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: 'Products')]
 final class IndexProductController
 {
-    public function __construct(private readonly MessageBusInterface $commandBus) {}
+    public function __construct(private readonly MessageBusInterface $commandBus)
+    {
+    }
 
     #[Route('/products/{id}/index', name: 'product_index', methods: ['POST'])]
     #[OA\Post(

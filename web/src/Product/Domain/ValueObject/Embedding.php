@@ -16,7 +16,7 @@ final class Embedding
     /** @param array<int, mixed> $values */
     public function __construct(array $values)
     {
-        if (count($values) !== self::DIMENSIONS) {
+        if (self::DIMENSIONS !== count($values)) {
             throw InvalidEmbeddingException::wrongDimensions(count($values));
         }
 

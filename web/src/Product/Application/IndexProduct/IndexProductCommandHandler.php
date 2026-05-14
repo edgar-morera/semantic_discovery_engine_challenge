@@ -6,8 +6,8 @@ namespace App\Product\Application\IndexProduct;
 
 use App\Product\Domain\Exception\ProductNotFoundException;
 use App\Product\Domain\Port\EmbeddingService;
-use App\Product\Domain\Repository\ProductRepository;
 use App\Product\Domain\Port\ProductSearchPort;
+use App\Product\Domain\Repository\ProductRepository;
 use App\Product\Domain\ValueObject\ProductId;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -18,7 +18,8 @@ final class IndexProductCommandHandler
         private readonly ProductRepository $productRepository,
         private readonly EmbeddingService $embeddingService,
         private readonly ProductSearchPort $productSearchRepository,
-    ) {}
+    ) {
+    }
 
     public function __invoke(IndexProductCommand $command): void
     {

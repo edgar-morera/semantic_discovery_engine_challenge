@@ -19,12 +19,13 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SearchProductsController
 {
     private const int DEFAULT_LIMIT = 10;
-    private const int MAX_LIMIT     = 50;
+    private const int MAX_LIMIT = 50;
 
     public function __construct(
         #[Target('query.bus')]
         private readonly MessageBusInterface $queryBus,
-    ) {}
+    ) {
+    }
 
     #[Route('/products/search', name: 'product_search', methods: ['GET'])]
     #[OA\Get(
@@ -76,10 +77,10 @@ final class SearchProductsController
         return new JsonResponse(
             array_map(
                 static fn (SearchProductsResponse $r) => [
-                    'id'                  => $r->id,
-                    'name'                => $r->name,
+                    'id' => $r->id,
+                    'name' => $r->name,
                     'semanticDescription' => $r->semanticDescription,
-                    'score'               => $r->score,
+                    'score' => $r->score,
                 ],
                 $results,
             ),

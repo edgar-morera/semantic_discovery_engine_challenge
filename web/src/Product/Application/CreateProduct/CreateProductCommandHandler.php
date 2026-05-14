@@ -14,7 +14,9 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler(bus: 'command.bus')]
 final class CreateProductCommandHandler
 {
-    public function __construct(private readonly ProductRepository $repository) {}
+    public function __construct(private readonly ProductRepository $repository)
+    {
+    }
 
     public function __invoke(CreateProductCommand $command): void
     {

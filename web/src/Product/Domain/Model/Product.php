@@ -17,7 +17,8 @@ final class Product
         private readonly ProductId $productId,
         private readonly ProductName $productName,
         private readonly ProductSemanticDescription $semanticDescription,
-    ) {}
+    ) {
+    }
 
     public static function create(
         ProductId $productId,
@@ -49,7 +50,7 @@ final class Product
 
     public function isIndexed(): bool
     {
-        return $this->embedding !== null;
+        return null !== $this->embedding;
     }
 
     public function embedding(): ?Embedding

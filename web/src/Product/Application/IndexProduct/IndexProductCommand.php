@@ -6,5 +6,7 @@ namespace App\Product\Application\IndexProduct;
 
 final readonly class IndexProductCommand
 {
-    public function __construct(public string $productId) {}
+    public function __construct(public string $productId)
+    {
+    }
 }

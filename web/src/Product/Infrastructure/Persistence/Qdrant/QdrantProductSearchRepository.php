@@ -18,7 +18,8 @@ final class QdrantProductSearchRepository implements ProductSearchPort
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly string $qdrantDsn,
-    ) {}
+    ) {
+    }
 
     public function index(Product $product, Embedding $embedding): void
     {
@@ -26,16 +27,16 @@ final class QdrantProductSearchRepository implements ProductSearchPort
 
         $this->httpClient->request(
             'PUT',
-            $this->qdrantDsn . '/collections/' . self::COLLECTION . '/points',
+            $this->qdrantDsn.'/collections/'.self::COLLECTION.'/points',
             [
                 'headers' => ['Content-Type' => 'application/json'],
-                'json'    => [
+                'json' => [
                     'points' => [
                         [
-                            'id'      => $product->productId()->value(),
-                            'vector'  => $embedding->values(),
+                            'id' => $product->productId()->value(),
+                            'vector' => $embedding->values(),
                             'payload' => [
-                                'name'                => $product->productName()->value(),
+                                'name' => $product->productName()->value(),
                                 'semantic_description' => $product->semanticDescription()->value(),
                             ],
                         ],
@@ -49,12 +50,12 @@ final class QdrantProductSearchRepository implements ProductSearchPort
     {
         $response = $this->httpClient->request(
             'POST',
-            $this->qdrantDsn . '/collections/' . self::COLLECTION . '/points/search',
+            $this->qdrantDsn.'/collections/'.self::COLLECTION.'/points/search',
             [
                 'headers' => ['Content-Type' => 'application/json'],
-                'json'    => [
-                    'vector'       => $query->values(),
-                    'limit'        => $limit,
+                'json' => [
+                    'vector' => $query->values(),
+                    'limit' => $limit,
                     'with_payload' => false,
                 ],
             ],
@@ -72,21 +73,22 @@ final class QdrantProductSearchRepository implements ProductSearchPort
         );
     }
 
-    private function ensureCollectionExists(): void    {
+    private function ensureCollectionExists(): void
+    {
         $statusCode = $this->httpClient->request(
             'GET',
-            $this->qdrantDsn . '/collections/' . self::COLLECTION,
+            $this->qdrantDsn.'/collections/'.self::COLLECTION,
         )->getStatusCode();
 
         if (404 === $statusCode) {
             $this->httpClient->request(
                 'PUT',
-                $this->qdrantDsn . '/collections/' . self::COLLECTION,
+                $this->qdrantDsn.'/collections/'.self::COLLECTION,
                 [
                     'headers' => ['Content-Type' => 'application/json'],
-                    'json'    => [
+                    'json' => [
                         'vectors' => [
-                            'size'     => Embedding::DIMENSIONS,
+                            'size' => Embedding::DIMENSIONS,
                             'distance' => 'Cosine',
                         ],
                     ],

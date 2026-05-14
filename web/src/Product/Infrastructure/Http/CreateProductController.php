@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Product\Infrastructure\Http;
 
 use App\Product\Application\CreateProduct\CreateProductCommand;
-use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +15,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: 'Products')]
 final class CreateProductController
 {
-    public function __construct(private readonly MessageBusInterface $commandBus) {}
+    public function __construct(private readonly MessageBusInterface $commandBus)
+    {
+    }
 
     #[Route('/products', name: 'product_create', methods: ['POST'])]
     #[OA\Post(

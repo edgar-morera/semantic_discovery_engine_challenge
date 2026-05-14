@@ -10,7 +10,7 @@ final class ProductSemanticDescription
 {
     public function __construct(private readonly string $value)
     {
-        if (trim($value) === '') {
+        if ('' === trim($value)) {
             throw new InvalidProductSemanticDescriptionException('Semantic description cannot be empty.');
         }
     }

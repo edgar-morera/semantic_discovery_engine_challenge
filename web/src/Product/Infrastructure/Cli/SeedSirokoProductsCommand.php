@@ -391,7 +391,7 @@ final class SeedSirokoProductsCommand extends Command
 
         $created = 0;
         $indexed = 0;
-        $errors  = 0;
+        $errors = 0;
 
         foreach (self::PRODUCTS as $data) {
             try {

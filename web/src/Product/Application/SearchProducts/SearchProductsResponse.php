@@ -11,5 +11,6 @@ final readonly class SearchProductsResponse
         public string $name,
         public string $semanticDescription,
         public float $score,
-    ) {}
+    ) {
+    }
 }
