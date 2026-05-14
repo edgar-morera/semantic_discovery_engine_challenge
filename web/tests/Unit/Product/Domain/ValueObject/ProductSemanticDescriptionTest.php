@@ -11,14 +11,14 @@ use PHPUnit\Framework\TestCase;
 
 final class ProductSemanticDescriptionTest extends TestCase
 {
-    public function test_creates_valid_description(): void
+    public function testCreatesValidDescription(): void
     {
         $description = new ProductSemanticDescription('Red thermal cycling jersey for cold weather');
 
         $this->assertSame('Red thermal cycling jersey for cold weather', $description->value());
     }
 
-    public function test_equals_returns_true_for_same_value(): void
+    public function testEqualsReturnsTrueForSameValue(): void
     {
         $d1 = new ProductSemanticDescription('Warm gloves');
         $d2 = new ProductSemanticDescription('Warm gloves');
@@ -26,7 +26,7 @@ final class ProductSemanticDescriptionTest extends TestCase
         $this->assertTrue($d1->equals($d2));
     }
 
-    public function test_equals_returns_false_for_different_value(): void
+    public function testEqualsReturnsFalseForDifferentValue(): void
     {
         $d1 = new ProductSemanticDescription('Warm gloves');
         $d2 = new ProductSemanticDescription('Lightweight helmet');
@@ -37,13 +37,13 @@ final class ProductSemanticDescriptionTest extends TestCase
     public static function blank_description_provider(): array
     {
         return [
-            'empty string'    => [''],
+            'empty string' => [''],
             'whitespace only' => ['     '],
         ];
     }
 
     #[DataProvider('blank_description_provider')]
-    public function test_throws_exception_for_blank_description(string $value): void
+    public function testThrowsExceptionForBlankDescription(string $value): void
     {
         $this->expectException(InvalidProductSemanticDescriptionException::class);
 

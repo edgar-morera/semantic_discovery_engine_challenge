@@ -11,14 +11,14 @@ use PHPUnit\Framework\TestCase;
 
 final class ProductIdTest extends TestCase
 {
-    public function test_creates_valid_uuid_v4(): void
+    public function testCreatesValidUuidV4(): void
     {
         $id = new ProductId('550e8400-e29b-41d4-a716-446655440000');
 
         $this->assertSame('550e8400-e29b-41d4-a716-446655440000', $id->value());
     }
 
-    public function test_equals_returns_true_for_same_value(): void
+    public function testEqualsReturnsTrueForSameValue(): void
     {
         $id1 = new ProductId('550e8400-e29b-41d4-a716-446655440000');
         $id2 = new ProductId('550e8400-e29b-41d4-a716-446655440000');
@@ -26,7 +26,7 @@ final class ProductIdTest extends TestCase
         $this->assertTrue($id1->equals($id2));
     }
 
-    public function test_equals_returns_false_for_different_value(): void
+    public function testEqualsReturnsFalseForDifferentValue(): void
     {
         $id1 = new ProductId('550e8400-e29b-41d4-a716-446655440000');
         $id2 = new ProductId('6ba7b810-9dad-41d1-80b4-00c04fd430c8');
@@ -34,7 +34,7 @@ final class ProductIdTest extends TestCase
         $this->assertFalse($id1->equals($id2));
     }
 
-    public function test_throws_exception_for_empty_string(): void
+    public function testThrowsExceptionForEmptyString(): void
     {
         $this->expectException(InvalidProductIdException::class);
 
@@ -44,14 +44,14 @@ final class ProductIdTest extends TestCase
     public static function invalid_uuid_v4_provider(): array
     {
         return [
-            'arbitrary string'    => ['not-a-uuid'],
-            'uuid v1'             => ['550e8400-e29b-11d4-a716-446655440000'],
-            'invalid variant'     => ['550e8400-e29b-41d4-c716-446655440000'],
+            'arbitrary string' => ['not-a-uuid'],
+            'uuid v1' => ['550e8400-e29b-11d4-a716-446655440000'],
+            'invalid variant' => ['550e8400-e29b-41d4-c716-446655440000'],
         ];
     }
 
     #[DataProvider('invalid_uuid_v4_provider')]
-    public function test_throws_exception_for_invalid_uuid_v4_format(string $value): void
+    public function testThrowsExceptionForInvalidUuidV4Format(string $value): void
     {
         $this->expectException(InvalidProductIdException::class);
 

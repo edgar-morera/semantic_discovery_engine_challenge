@@ -19,10 +19,10 @@ final class CreateProductCommandHandlerTest extends TestCase
     protected function setUp(): void
     {
         $this->repository = $this->createMock(ProductRepository::class);
-        $this->handler    = new CreateProductCommandHandler($this->repository);
+        $this->handler = new CreateProductCommandHandler($this->repository);
     }
 
-    public function test_saves_product_when_command_is_valid(): void
+    public function testSavesProductWhenCommandIsValid(): void
     {
         $command = new CreateProductCommand(
             name: 'Running shoes X1',

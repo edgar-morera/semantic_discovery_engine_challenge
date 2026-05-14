@@ -15,7 +15,7 @@ final class ProductTest extends TestCase
 {
     private const string VALID_UUID = '550e8400-e29b-41d4-a716-446655440000';
 
-    public function test_creates_product_with_factory_method(): void
+    public function testCreatesProductWithFactoryMethod(): void
     {
         $product = Product::create(
             new ProductId(self::VALID_UUID),
@@ -28,7 +28,7 @@ final class ProductTest extends TestCase
         $this->assertSame('Red jersey for cold weather cycling', $product->semanticDescription()->value());
     }
 
-    public function test_is_not_indexed_after_creation(): void
+    public function testIsNotIndexedAfterCreation(): void
     {
         $product = $this->make_product();
 
@@ -36,7 +36,7 @@ final class ProductTest extends TestCase
         $this->assertNull($product->embedding());
     }
 
-    public function test_is_indexed_after_assigning_embedding(): void
+    public function testIsIndexedAfterAssigningEmbedding(): void
     {
         $product = $this->make_product();
         $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
@@ -47,7 +47,7 @@ final class ProductTest extends TestCase
         $this->assertSame($embedding, $product->embedding());
     }
 
-    public function test_assign_embedding_replaces_previous_one(): void
+    public function testAssignEmbeddingReplacesPreviousOne(): void
     {
         $product = $this->make_product();
         $first = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));

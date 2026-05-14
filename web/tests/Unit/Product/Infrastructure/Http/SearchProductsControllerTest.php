@@ -22,11 +22,11 @@ final class SearchProductsControllerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->queryBus   = $this->createMock(MessageBusInterface::class);
+        $this->queryBus = $this->createMock(MessageBusInterface::class);
         $this->controller = new SearchProductsController($this->queryBus);
     }
 
-    public function test_returns_200_with_results(): void
+    public function testReturns200WithResults(): void
     {
         $results = [
             new SearchProductsResponse('550e8400-e29b-41d4-a716-446655440000', 'Shoes', 'Trail running shoes', 0.95),
@@ -40,7 +40,7 @@ final class SearchProductsControllerTest extends TestCase
             ->with($this->isInstanceOf(SearchProductsQuery::class))
             ->willReturn($envelope);
 
-        $request  = Request::create('/products/search', 'GET', ['q' => 'running']);
+        $request = Request::create('/products/search', 'GET', ['q' => 'running']);
         $response = ($this->controller)($request);
 
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
@@ -50,17 +50,17 @@ final class SearchProductsControllerTest extends TestCase
         $this->assertSame(0.95, $body[0]['score']);
     }
 
-    public function test_returns_400_when_q_is_missing(): void
+    public function testReturns400WhenQIsMissing(): void
     {
         $this->queryBus->expects($this->never())->method('dispatch');
 
-        $request  = Request::create('/products/search', 'GET');
+        $request = Request::create('/products/search', 'GET');
         $response = ($this->controller)($request);
 
         $this->assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
     }
 
-    public function test_clamps_limit_to_maximum_50(): void
+    public function testClampsLimitToMaximum50(): void
     {
         $envelope = new Envelope(new SearchProductsQuery('test', 50), [new HandledStamp([], 'handler')]);
 
@@ -68,7 +68,7 @@ final class SearchProductsControllerTest extends TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with($this->callback(
-                fn (SearchProductsQuery $q) => $q->limit === 50
+                fn (SearchProductsQuery $q) => 50 === $q->limit
             ))
             ->willReturn($envelope);
 
@@ -76,7 +76,7 @@ final class SearchProductsControllerTest extends TestCase
         ($this->controller)($request);
     }
 
-    public function test_uses_default_limit_of_10(): void
+    public function testUsesDefaultLimitOf10(): void
     {
         $envelope = new Envelope(new SearchProductsQuery('test', 10), [new HandledStamp([], 'handler')]);
 
@@ -84,7 +84,7 @@ final class SearchProductsControllerTest extends TestCase
             ->expects($this->once())
             ->method('dispatch')
             ->with($this->callback(
-                fn (SearchProductsQuery $q) => $q->limit === 10
+                fn (SearchProductsQuery $q) => 10 === $q->limit
             ))
             ->willReturn($envelope);
 

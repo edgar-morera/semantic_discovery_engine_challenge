@@ -23,7 +23,7 @@ final class CreateProductControllerTest extends TestCase
         $this->controller = new CreateProductController($this->commandBus);
     }
 
-    public function test_returns_201_with_id_on_valid_request(): void
+    public function testReturns201WithIdOnValidRequest(): void
     {
         $this->commandBus
             ->expects($this->once())
@@ -43,7 +43,7 @@ final class CreateProductControllerTest extends TestCase
         );
     }
 
-    public function test_returns_400_when_name_is_missing(): void
+    public function testReturns400WhenNameIsMissing(): void
     {
         $this->commandBus->expects($this->never())->method('dispatch');
 
@@ -52,7 +52,7 @@ final class CreateProductControllerTest extends TestCase
         self::assertSame(Response::HTTP_BAD_REQUEST, ($this->controller)($request)->getStatusCode());
     }
 
-    public function test_returns_400_when_semantic_description_is_missing(): void
+    public function testReturns400WhenSemanticDescriptionIsMissing(): void
     {
         $this->commandBus->expects($this->never())->method('dispatch');
 

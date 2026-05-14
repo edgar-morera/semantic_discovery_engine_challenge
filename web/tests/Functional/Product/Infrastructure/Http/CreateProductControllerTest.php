@@ -19,7 +19,7 @@ final class CreateProductControllerTest extends WebTestCase
         parent::tearDown();
     }
 
-    public function test_returns_201_with_product_id_on_valid_request(): void
+    public function testReturns201WithProductIdOnValidRequest(): void
     {
         $client = static::createClient();
 
@@ -28,13 +28,13 @@ final class CreateProductControllerTest extends WebTestCase
             uri: '/products',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
-                'name'                => 'Trail Running Shoes X200',
+                'name' => 'Trail Running Shoes X200',
                 'semanticDescription' => 'Lightweight carbon plate trail running shoes for mountain races',
             ]),
         );
 
         $response = $client->getResponse();
-        $body     = json_decode($response->getContent(), true);
+        $body = json_decode($response->getContent(), true);
 
         self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
         self::assertArrayHasKey('id', $body);
@@ -44,7 +44,7 @@ final class CreateProductControllerTest extends WebTestCase
         );
     }
 
-    public function test_returns_400_when_name_is_missing(): void
+    public function testReturns400WhenNameIsMissing(): void
     {
         $client = static::createClient();
 
@@ -58,7 +58,7 @@ final class CreateProductControllerTest extends WebTestCase
         self::assertSame(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
     }
 
-    public function test_returns_400_when_semantic_description_is_missing(): void
+    public function testReturns400WhenSemanticDescriptionIsMissing(): void
     {
         $client = static::createClient();
 

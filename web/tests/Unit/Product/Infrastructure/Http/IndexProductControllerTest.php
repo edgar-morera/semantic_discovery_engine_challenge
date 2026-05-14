@@ -26,7 +26,7 @@ final class IndexProductControllerTest extends TestCase
         $this->controller = new IndexProductController($this->commandBus);
     }
 
-    public function test_returns_204_when_product_is_indexed(): void
+    public function testReturns204WhenProductIsIndexed(): void
     {
         $this->commandBus
             ->expects($this->once())
@@ -39,7 +39,7 @@ final class IndexProductControllerTest extends TestCase
         $this->assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
     }
 
-    public function test_returns_404_when_product_not_found(): void
+    public function testReturns404WhenProductNotFound(): void
     {
         $this->commandBus
             ->method('dispatch')

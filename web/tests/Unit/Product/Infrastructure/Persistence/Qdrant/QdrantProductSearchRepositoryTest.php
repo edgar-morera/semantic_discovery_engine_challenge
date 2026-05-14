@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Product\Infrastructure\Persistence\Qdrant;
 
 use App\Product\Domain\ValueObject\Embedding;
-use App\Product\Domain\ValueObject\ProductId;
 use App\Product\Domain\ValueObject\SearchResult;
 use App\Product\Infrastructure\Persistence\Qdrant\QdrantProductSearchRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -27,9 +26,9 @@ final class QdrantProductSearchRepositoryTest extends TestCase
         $this->repository = new QdrantProductSearchRepository($this->httpClient, 'http://qdrant:6333');
     }
 
-    public function test_search_calls_qdrant_with_vector_and_limit(): void
+    public function testSearchCallsQdrantWithVectorAndLimit(): void
     {
-        $vector   = array_fill(0, Embedding::DIMENSIONS, 0.1);
+        $vector = array_fill(0, Embedding::DIMENSIONS, 0.1);
         $embedding = new Embedding($vector);
 
         $response = $this->createMock(ResponseInterface::class);
@@ -46,10 +45,9 @@ final class QdrantProductSearchRepositoryTest extends TestCase
             ->with(
                 'POST',
                 'http://qdrant:6333/collections/products/points/search',
-                $this->callback(fn (array $opts) =>
-                    $opts['json']['vector'] === $vector &&
-                    $opts['json']['limit'] === 5 &&
-                    $opts['json']['with_payload'] === false
+                $this->callback(fn (array $opts) => $opts['json']['vector'] === $vector
+                    && 5 === $opts['json']['limit']
+                    && false === $opts['json']['with_payload']
                 ),
             )
             ->willReturn($response);
@@ -64,7 +62,7 @@ final class QdrantProductSearchRepositoryTest extends TestCase
         $this->assertSame(0.82, $results[1]->score);
     }
 
-    public function test_search_returns_empty_array_when_no_results(): void
+    public function testSearchReturnsEmptyArrayWhenNoResults(): void
     {
         $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
 

@@ -11,14 +11,14 @@ use PHPUnit\Framework\TestCase;
 
 final class ProductNameTest extends TestCase
 {
-    public function test_creates_valid_name(): void
+    public function testCreatesValidName(): void
     {
         $name = new ProductName('Running shoes ultra pro');
 
         $this->assertSame('Running shoes ultra pro', $name->value());
     }
 
-    public function test_equals_returns_true_for_same_value(): void
+    public function testEqualsReturnsTrueForSameValue(): void
     {
         $name1 = new ProductName('Running shoes');
         $name2 = new ProductName('Running shoes');
@@ -26,7 +26,7 @@ final class ProductNameTest extends TestCase
         $this->assertTrue($name1->equals($name2));
     }
 
-    public function test_equals_returns_false_for_different_value(): void
+    public function testEqualsReturnsFalseForDifferentValue(): void
     {
         $name1 = new ProductName('Running shoes');
         $name2 = new ProductName('Cycling jersey');
@@ -37,27 +37,27 @@ final class ProductNameTest extends TestCase
     public static function blank_name_provider(): array
     {
         return [
-            'empty string'    => [''],
+            'empty string' => [''],
             'whitespace only' => ['   '],
         ];
     }
 
     #[DataProvider('blank_name_provider')]
-    public function test_throws_exception_for_blank_name(string $value): void
+    public function testThrowsExceptionForBlankName(string $value): void
     {
         $this->expectException(InvalidProductNameException::class);
 
         new ProductName($value);
     }
 
-    public function test_throws_exception_when_exceeds_255_characters(): void
+    public function testThrowsExceptionWhenExceeds255Characters(): void
     {
         $this->expectException(InvalidProductNameException::class);
 
         new ProductName(str_repeat('a', 256));
     }
 
-    public function test_accepts_name_of_exactly_255_characters(): void
+    public function testAcceptsNameOfExactly255Characters(): void
     {
         $name = new ProductName(str_repeat('a', 255));
 

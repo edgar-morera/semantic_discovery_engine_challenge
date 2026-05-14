@@ -9,8 +9,8 @@ use App\Product\Application\IndexProduct\IndexProductCommandHandler;
 use App\Product\Domain\Exception\ProductNotFoundException;
 use App\Product\Domain\Model\Product;
 use App\Product\Domain\Port\EmbeddingService;
-use App\Product\Domain\Repository\ProductRepository;
 use App\Product\Domain\Port\ProductSearchPort;
+use App\Product\Domain\Repository\ProductRepository;
 use App\Product\Domain\ValueObject\Embedding;
 use App\Product\Domain\ValueObject\ProductId;
 use App\Product\Domain\ValueObject\ProductName;
@@ -29,8 +29,8 @@ final class IndexProductCommandHandlerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->productRepository      = $this->createMock(ProductRepository::class);
-        $this->embeddingService       = $this->createMock(EmbeddingService::class);
+        $this->productRepository = $this->createMock(ProductRepository::class);
+        $this->embeddingService = $this->createMock(EmbeddingService::class);
         $this->productSearchRepository = $this->createMock(ProductSearchPort::class);
 
         $this->handler = new IndexProductCommandHandler(
@@ -40,9 +40,9 @@ final class IndexProductCommandHandlerTest extends TestCase
         );
     }
 
-    public function test_indexes_product_when_it_exists(): void
+    public function testIndexesProductWhenItExists(): void
     {
-        $product   = $this->make_product();
+        $product = $this->make_product();
         $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
 
         $this->productRepository
@@ -64,9 +64,9 @@ final class IndexProductCommandHandlerTest extends TestCase
         ($this->handler)(new IndexProductCommand(self::VALID_UUID));
     }
 
-    public function test_assigns_embedding_to_product_after_indexing(): void
+    public function testAssignsEmbeddingToProductAfterIndexing(): void
     {
-        $product   = $this->make_product();
+        $product = $this->make_product();
         $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.5));
 
         $this->productRepository->method('findById')->willReturn($product);
@@ -79,7 +79,7 @@ final class IndexProductCommandHandlerTest extends TestCase
         $this->assertSame($embedding, $product->embedding());
     }
 
-    public function test_throws_product_not_found_when_product_does_not_exist(): void
+    public function testThrowsProductNotFoundWhenProductDoesNotExist(): void
     {
         $this->productRepository
             ->method('findById')

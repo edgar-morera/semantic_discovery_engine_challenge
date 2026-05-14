@@ -20,12 +20,12 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->httpClient = $this->createMock(HttpClientInterface::class);
-        $this->service    = new HuggingFaceEmbeddingService($this->httpClient, 'test-api-key');
+        $this->service = new HuggingFaceEmbeddingService($this->httpClient, 'test-api-key');
     }
 
-    public function test_returns_embedding_from_api_response(): void
+    public function testReturnsEmbeddingFromApiResponse(): void
     {
-        $vector   = array_fill(0, Embedding::DIMENSIONS, 0.1);
+        $vector = array_fill(0, Embedding::DIMENSIONS, 0.1);
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn([$vector]);
 
@@ -40,15 +40,15 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
             ->willReturn($response);
 
         $description = new ProductSemanticDescription('Trail running shoes for mountain races');
-        $embedding   = $this->service->generate($description);
+        $embedding = $this->service->generate($description);
 
         $this->assertInstanceOf(Embedding::class, $embedding);
         $this->assertCount(Embedding::DIMENSIONS, $embedding->values());
     }
 
-    public function test_sends_authorization_header_with_api_key(): void
+    public function testSendsAuthorizationHeaderWithApiKey(): void
     {
-        $vector   = array_fill(0, Embedding::DIMENSIONS, 0.0);
+        $vector = array_fill(0, Embedding::DIMENSIONS, 0.0);
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn([$vector]);
 
@@ -68,7 +68,7 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
         $this->service->generate(new ProductSemanticDescription('some description'));
     }
 
-    public function test_throws_runtime_exception_on_unexpected_response_format(): void
+    public function testThrowsRuntimeExceptionOnUnexpectedResponseFormat(): void
     {
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn([]);

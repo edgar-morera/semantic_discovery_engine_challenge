@@ -31,7 +31,7 @@ final class SearchProductsQueryHandlerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->embeddingService  = $this->createMock(EmbeddingService::class);
+        $this->embeddingService = $this->createMock(EmbeddingService::class);
         $this->productSearchPort = $this->createMock(ProductSearchPort::class);
         $this->productRepository = $this->createMock(ProductRepository::class);
 
@@ -42,11 +42,11 @@ final class SearchProductsQueryHandlerTest extends TestCase
         );
     }
 
-    public function test_returns_responses_ordered_by_score(): void
+    public function testReturnsResponsesOrderedByScore(): void
     {
         $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
-        $productA  = $this->make_product(self::UUID_A, 'Shoes', 'Trail running shoes');
-        $productB  = $this->make_product(self::UUID_B, 'Jacket', 'Waterproof jacket');
+        $productA = $this->make_product(self::UUID_A, 'Shoes', 'Trail running shoes');
+        $productB = $this->make_product(self::UUID_B, 'Jacket', 'Waterproof jacket');
 
         $this->embeddingService->method('generate')->willReturn($embedding);
 
@@ -76,7 +76,7 @@ final class SearchProductsQueryHandlerTest extends TestCase
         $this->assertSame(0.82, $result[1]->score);
     }
 
-    public function test_returns_empty_array_when_no_results(): void
+    public function testReturnsEmptyArrayWhenNoResults(): void
     {
         $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
 
@@ -89,10 +89,10 @@ final class SearchProductsQueryHandlerTest extends TestCase
         $this->assertSame([], $result);
     }
 
-    public function test_skips_product_not_found_in_mysql(): void
+    public function testSkipsProductNotFoundInMysql(): void
     {
         $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
-        $productA  = $this->make_product(self::UUID_A, 'Shoes', 'Trail running shoes');
+        $productA = $this->make_product(self::UUID_A, 'Shoes', 'Trail running shoes');
 
         $this->embeddingService->method('generate')->willReturn($embedding);
 
@@ -114,7 +114,7 @@ final class SearchProductsQueryHandlerTest extends TestCase
         $this->assertSame(self::UUID_A, $result[0]->id);
     }
 
-    public function test_respects_limit_parameter(): void
+    public function testRespectsLimitParameter(): void
     {
         $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
 
