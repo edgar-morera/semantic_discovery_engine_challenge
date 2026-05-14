@@ -7,6 +7,7 @@ namespace App\Product\Infrastructure\Persistence\Qdrant;
 use App\Product\Domain\Model\Product;
 use App\Product\Domain\Port\ProductSearchPort;
 use App\Product\Domain\ValueObject\Embedding;
+use App\Product\Domain\ValueObject\ProductId;
 use App\Product\Domain\ValueObject\SearchResult;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -46,7 +47,29 @@ final class QdrantProductSearchRepository implements ProductSearchPort
 
     public function search(Embedding $query, int $limit): array
     {
-        throw new \LogicException('Not implemented yet — will be completed in Phase 5c.');
+        $response = $this->httpClient->request(
+            'POST',
+            $this->qdrantDsn . '/collections/' . self::COLLECTION . '/points/search',
+            [
+                'headers' => ['Content-Type' => 'application/json'],
+                'json'    => [
+                    'vector'       => $query->values(),
+                    'limit'        => $limit,
+                    'with_payload' => false,
+                ],
+            ],
+        );
+
+        /** @var array{result: array<int, array{id: string, score: float}>} $body */
+        $body = $response->toArray();
+
+        return array_map(
+            static fn (array $hit) => new SearchResult(
+                new ProductId($hit['id']),
+                $hit['score'],
+            ),
+            $body['result'],
+        );
     }
 
     private function ensureCollectionExists(): void    {
