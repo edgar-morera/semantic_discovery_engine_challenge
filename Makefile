@@ -11,6 +11,7 @@ help: ## Show this help
 init: ## First-time setup: copy .env, build images, run migrations
 	cp .env.example .env
 	docker compose up --build -d
+	$(PHP) composer install --no-interaction
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction
 
 rebuild: ## Rebuild Docker images
@@ -21,7 +22,7 @@ up: ## Start all services in background
 	docker compose up -d
 
 restart: ## Restart all services
-	docker compose up --recreate -d
+	docker compose up --force-recreate -d
 
 stop: ## Stop all services (keeps volumes)
 	docker compose stop
