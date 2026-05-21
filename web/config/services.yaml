@@ -33,3 +33,7 @@ services:
     App\Product\Infrastructure\Persistence\Qdrant\QdrantProductSearchRepository:
         arguments:
             $qdrantDsn: '%env(QDRANT_DSN)%'
+
+    App\Product\Infrastructure\Cli\SetupQdrantCommand:
+        arguments:
+            $qdrantDsn: '%env(QDRANT_DSN)%'

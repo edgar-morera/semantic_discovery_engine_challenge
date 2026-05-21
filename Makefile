@@ -8,11 +8,12 @@ help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
 ## —— Docker ——————————————————————————————————————————————————————————————————
-init: ## First-time setup: copy .env, build images, run migrations
+init: ## First-time setup: copy .env, build images, run migrations, setup Qdrant
 	cp .env.example .env
 	docker compose up --build -d
 	$(PHP) composer install --no-interaction
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction
+	$(CONSOLE) app:qdrant:setup
 
 rebuild: ## Rebuild Docker images
 	docker compose stop

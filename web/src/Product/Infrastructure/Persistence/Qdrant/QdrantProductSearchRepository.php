@@ -23,8 +23,6 @@ final class QdrantProductSearchRepository implements ProductSearchPort
 
     public function index(Product $product, Embedding $embedding): void
     {
-        $this->ensureCollectionExists();
-
         $this->httpClient->request(
             'PUT',
             $this->qdrantDsn.'/collections/'.self::COLLECTION.'/points',
@@ -75,27 +73,5 @@ final class QdrantProductSearchRepository implements ProductSearchPort
         );
     }
 
-    private function ensureCollectionExists(): void
-    {
-        $statusCode = $this->httpClient->request(
-            'GET',
-            $this->qdrantDsn.'/collections/'.self::COLLECTION,
-        )->getStatusCode();
 
-        if (404 === $statusCode) {
-            $this->httpClient->request(
-                'PUT',
-                $this->qdrantDsn.'/collections/'.self::COLLECTION,
-                [
-                    'headers' => ['Content-Type' => 'application/json'],
-                    'json' => [
-                        'vectors' => [
-                            'size' => Embedding::DIMENSIONS,
-                            'distance' => 'Cosine',
-                        ],
-                    ],
-                ],
-            )->getStatusCode();
-        }
-    }
 }
