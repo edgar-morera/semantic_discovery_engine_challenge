@@ -60,6 +60,14 @@ Registro de algunos momentos donde la IA propuso algo y se decidió en sentido c
 
 ---
 
+## 9. Datos del producto leídos del payload de Qdrant en la búsqueda
+
+**IA generó** `SearchProductsQueryHandler` haciendo una consulta MySQL (`findById`) por cada resultado de Qdrant para obtener nombre y descripción.
+
+**Decisión:** Rechazado el patrón N+1. `SearchResult` se enriqueció con `name` y `semanticDescription` leídos directamente del payload de Qdrant, eliminando la dependencia de MySQL en el flujo de búsqueda. La consistencia eventual es el comportamiento esperado en un sistema de búsqueda — los datos se actualizan al re-indexar.
+
+---
+
 ## 8. UUID generado en el controlador mediante puerto de dominio
 
 **IA generó** `CreateProductCommand` con auto-generación de UUID en el constructor (`Uuid::v4()` como side effect).

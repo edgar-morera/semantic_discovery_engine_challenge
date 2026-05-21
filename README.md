@@ -79,6 +79,8 @@ Embedding (Value Object, no persiste en MySQL)
 
 SearchResult (Value Object)
 ├── productId: ProductId
+├── name: string
+├── semanticDescription: string
 └── score: float       — similitud coseno 0.0–1.0
 
 Ports

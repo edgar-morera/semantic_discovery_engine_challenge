@@ -151,3 +151,8 @@ Dos correcciones arquitectónicas identificadas tras la revisión del código.
 
 - IA: implementó el port, el adaptador, el wiring en services.yaml y actualizó los tests
 - Dev: diseñó la estrategia; decidió generar el ID en el controlador para mantener el command como DTO puro y el handler como void
+
+#### Subfase 9c — Eliminar N+1 MySQL en búsqueda leyendo payload de Qdrant - **AI-collab**
+
+- IA: enriqueció `SearchResult`, actualizó repositorio y handler, adaptó tests
+- Dev: identificó el problema N+1, evaluó el tradeoff de consistencia eventual y decidió prescindir de MySQL en el flujo de búsqueda
