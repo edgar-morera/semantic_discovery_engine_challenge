@@ -69,10 +69,8 @@ final class SearchProductsController
 
         $envelope = $this->queryBus->dispatch(new SearchProductsQuery($queryText, $limit));
 
-        $stamp = $envelope->last(HandledStamp::class);
-
         /** @var SearchProductsResponse[] $results */
-        $results = $stamp instanceof HandledStamp ? $stamp->getResult() : [];
+        $results = $envelope->last(HandledStamp::class)->getResult();
 
         return new JsonResponse(
             array_map(
