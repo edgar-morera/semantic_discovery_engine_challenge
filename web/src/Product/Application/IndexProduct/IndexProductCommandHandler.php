@@ -32,8 +32,6 @@ final class IndexProductCommandHandler
 
         $embedding = $this->embeddingService->generate($product->semanticDescription());
 
-        $product->assignEmbedding($embedding);
-
         $this->productSearchRepository->index($product, $embedding);
     }
 }

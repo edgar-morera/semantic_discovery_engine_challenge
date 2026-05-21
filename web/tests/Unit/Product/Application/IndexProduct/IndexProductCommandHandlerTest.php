@@ -64,21 +64,6 @@ final class IndexProductCommandHandlerTest extends TestCase
         ($this->handler)(new IndexProductCommand(self::VALID_UUID));
     }
 
-    public function testAssignsEmbeddingToProductAfterIndexing(): void
-    {
-        $product = $this->make_product();
-        $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.5));
-
-        $this->productRepository->method('findById')->willReturn($product);
-        $this->embeddingService->method('generate')->willReturn($embedding);
-        $this->productSearchRepository->method('index');
-
-        ($this->handler)(new IndexProductCommand(self::VALID_UUID));
-
-        $this->assertTrue($product->isIndexed());
-        $this->assertSame($embedding, $product->embedding());
-    }
-
     public function testThrowsProductNotFoundWhenProductDoesNotExist(): void
     {
         $this->productRepository
