@@ -27,7 +27,7 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
     {
         $vector = array_fill(0, Embedding::DIMENSIONS, 0.1);
         $response = $this->createMock(ResponseInterface::class);
-        $response->method('toArray')->willReturn([$vector]);
+        $response->method('toArray')->willReturn($vector);
 
         $this->httpClient
             ->expects($this->once())
@@ -43,14 +43,14 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
         $embedding = $this->service->generate($description);
 
         $this->assertInstanceOf(Embedding::class, $embedding);
-        $this->assertCount(Embedding::DIMENSIONS, $embedding->values());
+        $this->assertSame($vector, $embedding->values());
     }
 
     public function testSendsAuthorizationHeaderWithApiKey(): void
     {
         $vector = array_fill(0, Embedding::DIMENSIONS, 0.0);
         $response = $this->createMock(ResponseInterface::class);
-        $response->method('toArray')->willReturn([$vector]);
+        $response->method('toArray')->willReturn($vector);
 
         $this->httpClient
             ->expects($this->once())
@@ -65,21 +65,6 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
             ->willReturn($response);
 
         $this->service->generate(new ProductSemanticDescription('some description'));
-    }
-
-    public function testReturnsEmbeddingFromFlatResponseFormat(): void
-    {
-        $vector = array_fill(0, Embedding::DIMENSIONS, 0.1);
-
-        $response = $this->createMock(ResponseInterface::class);
-        $response->method('toArray')->willReturn($vector);
-
-        $this->httpClient->method('request')->willReturn($response);
-
-        $embedding = $this->service->generate(new ProductSemanticDescription('trail running shoes'));
-
-        $this->assertInstanceOf(Embedding::class, $embedding);
-        $this->assertCount(Embedding::DIMENSIONS, $embedding->values());
     }
 
     public function testThrowsRuntimeExceptionOnUnexpectedResponseFormat(): void

@@ -33,20 +33,11 @@ final class HuggingFaceEmbeddingService implements EmbeddingService
 
         $body = $response->toArray();
 
-        // Flat array of floats: [0.1, 0.2, ...]
-        if (isset($body[0]) && is_float($body[0])) {
-            /* @var float[] $body */
-            return new Embedding($body);
+        if (!isset($body[0]) || !is_float($body[0])) {
+            throw new \RuntimeException('Unexpected response format from HuggingFace API.');
         }
 
-        // Nested array of floats: [[0.1, 0.2, ...]]
-        if (isset($body[0]) && is_array($body[0])) {
-            /** @var float[] $vector */
-            $vector = $body[0];
-
-            return new Embedding($vector);
-        }
-
-        throw new \RuntimeException('Unexpected response format from HuggingFace API.');
+        /** @var float[] $body */
+        return new Embedding($body);
     }
 }
