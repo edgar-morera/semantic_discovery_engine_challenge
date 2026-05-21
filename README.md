@@ -72,14 +72,17 @@ curl "http://localhost:8080/products/search?q=chaleco+termico+invierno&limit=5"
 Product (Aggregate Root)
 ├── ProductId          — UUID v4
 ├── ProductName        — string, no vacío, máx 255 chars
-├── ProductSemanticDescription — string, no vacío
-└── Embedding (opcional) — array de exactamente 384 floats
+└── ProductSemanticDescription — string, no vacío
+
+Embedding (Value Object, no persiste en MySQL)
+└── values: float[384] — usado exclusivamente por EmbeddingService y ProductSearchPort
 
 SearchResult (Value Object)
-├── Product
+├── productId: ProductId
 └── score: float       — similitud coseno 0.0–1.0
 
 Ports
+├── ProductIdGenerator        — genera ProductId (UUID v4)
 ├── EmbeddingService          — genera Embedding a partir de una descripción
 └── ProductSearchPort         — indexa y busca por vector en Qdrant
 ```

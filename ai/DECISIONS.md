@@ -50,5 +50,19 @@ Registro de algunos momentos donde la IA propuso algo y se decidió en sentido c
 
 **Decisión:** Se añadió la variable al bloque `environment:` del servicio.
 
+---
 
+## 7. Embedding desacoplado del agregado Product
+
+**IA generó** `Product` con una propiedad `$embedding` nullable, métodos `assignEmbedding()`, `isIndexed()` y `embedding()`, y el handler mutando el agregado tras generar el vector.
+
+**Decisión:** Rechazado. El embedding es un artefacto de la infraestructura de búsqueda semántica, no un atributo del agregado de negocio. Además, Doctrine nunca persiste `$embedding` (vive en Qdrant), por lo que `isIndexed()` siempre devolvía `false` tras hidratar desde MySQL. Se eliminaron los métodos del agregado y el handler ahora pasa el `Embedding` directamente a `ProductSearchPort::index()` sin mutar el producto.
+
+---
+
+## 8. UUID generado en el controlador mediante puerto de dominio
+
+**IA generó** `CreateProductCommand` con auto-generación de UUID en el constructor (`Uuid::v4()` como side effect).
+
+**Decisión:** Rechazado. Un command es un DTO puro — no debe tener lógica ni dependencias de infraestructura. Se introdujo el puerto `ProductIdGenerator` en el dominio con el adaptador `SymfonyUuidProductIdGenerator` en infraestructura. El controlador inyecta el puerto, genera el ID en el borde del sistema y lo pasa al command como dato estable. El handler permanece `void`.
 

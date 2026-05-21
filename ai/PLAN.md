@@ -136,4 +136,18 @@ Instalar k6, crear scripts de carga por endpoint, medir baseline, analizar resul
 **Crear ficheros README.md, PLAN.md, DECISIONS.md y key-prompts.md** - **AI-pair**
 
 - IA: completó y propuso cambios para enriquecer las descripciones y normalizar el estilo
-- Dev: redactó los ficheros base y supervisó a la IA 
+- Dev: redactó los ficheros base y supervisó a la IA
+
+### Fase 9 — Refactoring post-challenge
+
+Dos correcciones arquitectónicas identificadas tras la revisión del código.
+
+#### Subfase 9a — Desacoplar Embedding del agregado Product - **AI-collab**
+
+- IA: actualizó el handler y los tests para reflejar el nuevo diseño
+- Dev: identificó el flaw (isIndexed() siempre false desde Doctrine), decidió la estrategia de desacoplamiento; `Embedding` pasa a ser un VO de dominio usado exclusivamente por `ProductSearchPort`
+
+#### Subfase 9b — Puerto ProductIdGenerator para generación de identidad - **AI-collab**
+
+- IA: implementó el port, el adaptador, el wiring en services.yaml y actualizó los tests
+- Dev: diseñó la estrategia; decidió generar el ID en el controlador para mantener el command como DTO puro y el handler como void
