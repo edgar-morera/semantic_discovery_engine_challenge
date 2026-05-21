@@ -56,17 +56,19 @@ final class QdrantProductSearchRepository implements ProductSearchPort
                 'json' => [
                     'vector' => $query->values(),
                     'limit' => $limit,
-                    'with_payload' => false,
+                    'with_payload' => true,
                 ],
             ],
         );
 
-        /** @var array{result: array<int, array{id: string, score: float}>} $body */
+        /** @var array{result: array<int, array{id: string, score: float, payload: array{name: string, semantic_description: string}}>} $body */
         $body = $response->toArray();
 
         return array_map(
             static fn (array $hit) => new SearchResult(
                 new ProductId($hit['id']),
+                $hit['payload']['name'],
+                $hit['payload']['semantic_description'],
                 $hit['score'],
             ),
             $body['result'],

@@ -34,8 +34,8 @@ final class QdrantProductSearchRepositoryTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn([
             'result' => [
-                ['id' => self::UUID_A, 'score' => 0.95],
-                ['id' => self::UUID_B, 'score' => 0.82],
+                ['id' => self::UUID_A, 'score' => 0.95, 'payload' => ['name' => 'Shoes', 'semantic_description' => 'Trail running shoes']],
+                ['id' => self::UUID_B, 'score' => 0.82, 'payload' => ['name' => 'Jacket', 'semantic_description' => 'Waterproof jacket']],
             ],
         ]);
 
@@ -47,7 +47,7 @@ final class QdrantProductSearchRepositoryTest extends TestCase
                 'http://qdrant:6333/collections/products/points/search',
                 $this->callback(fn (array $opts) => $opts['json']['vector'] === $vector
                     && 5 === $opts['json']['limit']
-                    && false === $opts['json']['with_payload']
+                    && true === $opts['json']['with_payload']
                 ),
             )
             ->willReturn($response);
@@ -57,6 +57,8 @@ final class QdrantProductSearchRepositoryTest extends TestCase
         $this->assertCount(2, $results);
         $this->assertContainsOnlyInstancesOf(SearchResult::class, $results);
         $this->assertSame(self::UUID_A, $results[0]->productId->value());
+        $this->assertSame('Shoes', $results[0]->name);
+        $this->assertSame('Trail running shoes', $results[0]->semanticDescription);
         $this->assertSame(0.95, $results[0]->score);
         $this->assertSame(self::UUID_B, $results[1]->productId->value());
         $this->assertSame(0.82, $results[1]->score);
