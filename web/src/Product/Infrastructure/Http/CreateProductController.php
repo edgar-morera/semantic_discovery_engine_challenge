@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Product\Infrastructure\Http;
 
 use App\Product\Application\CreateProduct\CreateProductCommand;
+use App\Product\Domain\Port\ProductIdGenerator;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,8 +16,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: 'Products')]
 final class CreateProductController
 {
-    public function __construct(private readonly MessageBusInterface $commandBus)
-    {
+    public function __construct(
+        private readonly MessageBusInterface $commandBus,
+        private readonly ProductIdGenerator $idGenerator,
+    ) {
     }
 
     #[Route('/products', name: 'product_create', methods: ['POST'])]
@@ -56,13 +59,14 @@ final class CreateProductController
             );
         }
 
-        $command = new CreateProductCommand(
+        $id = $this->idGenerator->generate();
+
+        $this->commandBus->dispatch(new CreateProductCommand(
+            id: $id->value(),
             name: (string) $body['name'],
             semanticDescription: (string) $body['semanticDescription'],
-        );
+        ));
 
-        $this->commandBus->dispatch($command);
-
-        return new JsonResponse(['id' => $command->id], Response::HTTP_CREATED);
+        return new JsonResponse(['id' => $id->value()], Response::HTTP_CREATED);
     }
 }

@@ -23,6 +23,9 @@ services:
     App\Product\Domain\Port\ProductSearchPort:
         alias: App\Product\Infrastructure\Persistence\Qdrant\QdrantProductSearchRepository
 
+    App\Product\Domain\Port\ProductIdGenerator:
+        alias: App\Product\Infrastructure\Identity\SymfonyUuidProductIdGenerator
+
     App\Product\Infrastructure\External\HuggingFaceEmbeddingService:
         arguments:
             $apiKey: '%env(HUGGINGFACE_API_KEY)%'

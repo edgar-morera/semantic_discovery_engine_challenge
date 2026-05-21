@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Product\Infrastructure\Http;
 
+use App\Product\Domain\Port\ProductIdGenerator;
+use App\Product\Domain\ValueObject\ProductId;
 use App\Product\Infrastructure\Http\CreateProductController;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -14,51 +16,52 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class CreateProductControllerTest extends TestCase
 {
+    private const string FIXED_UUID = '550e8400-e29b-41d4-a716-446655440000';
+
     private MessageBusInterface&MockObject $commandBus;
+    private ProductIdGenerator&MockObject $idGenerator;
     private CreateProductController $controller;
 
     protected function setUp(): void
     {
         $this->commandBus = $this->createMock(MessageBusInterface::class);
-        $this->controller = new CreateProductController($this->commandBus);
+        $this->idGenerator = $this->createMock(ProductIdGenerator::class);
+        $this->controller = new CreateProductController($this->commandBus, $this->idGenerator);
     }
 
     public function testReturns201WithIdOnValidRequest(): void
     {
+        $this->idGenerator
+            ->expects($this->once())
+            ->method('generate')
+            ->willReturn(new ProductId(self::FIXED_UUID));
+
         $this->commandBus
             ->expects($this->once())
             ->method('dispatch')
             ->willReturnCallback(fn (object $message) => new Envelope($message));
 
-        $request = $this->buildRequest(['name' => 'Trail Shoes', 'semanticDescription' => 'Lightweight trail shoes']);
-
-        $response = ($this->controller)($request);
+        $response = ($this->controller)($this->buildRequest(['name' => 'Trail Shoes', 'semanticDescription' => 'Lightweight trail shoes']));
 
         self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
         $body = json_decode($response->getContent(), true);
-        self::assertArrayHasKey('id', $body);
-        self::assertMatchesRegularExpression(
-            '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
-            $body['id']
-        );
+        self::assertSame(self::FIXED_UUID, $body['id']);
     }
 
     public function testReturns400WhenNameIsMissing(): void
     {
+        $this->idGenerator->expects($this->never())->method('generate');
         $this->commandBus->expects($this->never())->method('dispatch');
 
-        $request = $this->buildRequest(['semanticDescription' => 'Some description']);
-
-        self::assertSame(Response::HTTP_BAD_REQUEST, ($this->controller)($request)->getStatusCode());
+        self::assertSame(Response::HTTP_BAD_REQUEST, ($this->controller)($this->buildRequest(['semanticDescription' => 'Some description']))->getStatusCode());
     }
 
     public function testReturns400WhenSemanticDescriptionIsMissing(): void
     {
+        $this->idGenerator->expects($this->never())->method('generate');
         $this->commandBus->expects($this->never())->method('dispatch');
 
-        $request = $this->buildRequest(['name' => 'Some product']);
-
-        self::assertSame(Response::HTTP_BAD_REQUEST, ($this->controller)($request)->getStatusCode());
+        self::assertSame(Response::HTTP_BAD_REQUEST, ($this->controller)($this->buildRequest(['name' => 'Some product']))->getStatusCode());
     }
 
     private function buildRequest(array $body): Request

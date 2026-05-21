@@ -25,6 +25,7 @@ final class CreateProductCommandHandlerTest extends TestCase
     public function testSavesProductWhenCommandIsValid(): void
     {
         $command = new CreateProductCommand(
+            id: '550e8400-e29b-41d4-a716-446655440000',
             name: 'Running shoes X1',
             semanticDescription: 'Lightweight trail running shoes with carbon plate',
         );
