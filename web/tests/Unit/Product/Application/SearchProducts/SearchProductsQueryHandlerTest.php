@@ -35,7 +35,7 @@ final class SearchProductsQueryHandlerTest extends TestCase
         );
     }
 
-    public function testReturnsResponsesOrderedByScore(): void
+    public function testMapsSearchResultsToResponsesPreservingOrder(): void
     {
         $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
 
@@ -59,6 +59,7 @@ final class SearchProductsQueryHandlerTest extends TestCase
         $this->assertSame(0.95, $result[0]->score);
         $this->assertSame(self::UUID_B, $result[1]->id);
         $this->assertSame(0.82, $result[1]->score);
+        $this->assertGreaterThan($result[1]->score, $result[0]->score);
     }
 
     public function testReturnsEmptyArrayWhenNoResults(): void

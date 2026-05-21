@@ -59,13 +59,27 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
                 'POST',
                 $this->anything(),
                 $this->callback(static function (array $options): bool {
-                    return isset($options['headers']['Authorization'])
-                        && str_starts_with($options['headers']['Authorization'], 'Bearer ');
+                    return 'Bearer test-api-key' === ($options['headers']['Authorization'] ?? null);
                 }),
             )
             ->willReturn($response);
 
         $this->service->generate(new ProductSemanticDescription('some description'));
+    }
+
+    public function testReturnsEmbeddingFromFlatResponseFormat(): void
+    {
+        $vector = array_fill(0, Embedding::DIMENSIONS, 0.1);
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('toArray')->willReturn($vector);
+
+        $this->httpClient->method('request')->willReturn($response);
+
+        $embedding = $this->service->generate(new ProductSemanticDescription('trail running shoes'));
+
+        $this->assertInstanceOf(Embedding::class, $embedding);
+        $this->assertCount(Embedding::DIMENSIONS, $embedding->values());
     }
 
     public function testThrowsRuntimeExceptionOnUnexpectedResponseFormat(): void

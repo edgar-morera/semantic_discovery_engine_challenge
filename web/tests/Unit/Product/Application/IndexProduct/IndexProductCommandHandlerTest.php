@@ -54,6 +54,7 @@ final class IndexProductCommandHandlerTest extends TestCase
         $this->embeddingService
             ->expects($this->once())
             ->method('generate')
+            ->with($product->semanticDescription())
             ->willReturn($embedding);
 
         $this->productSearchRepository

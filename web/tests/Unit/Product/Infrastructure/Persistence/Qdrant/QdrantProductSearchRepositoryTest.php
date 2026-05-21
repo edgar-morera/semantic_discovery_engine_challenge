@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Product\Infrastructure\Persistence\Qdrant;
 
+use App\Product\Domain\Model\Product;
 use App\Product\Domain\ValueObject\Embedding;
+use App\Product\Domain\ValueObject\ProductId;
+use App\Product\Domain\ValueObject\ProductName;
+use App\Product\Domain\ValueObject\ProductSemanticDescription;
 use App\Product\Domain\ValueObject\SearchResult;
 use App\Product\Infrastructure\Persistence\Qdrant\QdrantProductSearchRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -76,5 +80,38 @@ final class QdrantProductSearchRepositoryTest extends TestCase
         $results = $this->repository->search($embedding, 10);
 
         $this->assertSame([], $results);
+    }
+
+    public function testIndexSendsCorrectPayloadToQdrant(): void
+    {
+        $product = Product::create(
+            new ProductId(self::UUID_A),
+            new ProductName('Trail Shoes'),
+            new ProductSemanticDescription('Lightweight trail running shoes'),
+        );
+        $vector = array_fill(0, Embedding::DIMENSIONS, 0.3);
+        $embedding = new Embedding($vector);
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->with(
+                'PUT',
+                'http://qdrant:6333/collections/products/points',
+                $this->callback(function (array $opts) use ($vector): bool {
+                    $point = $opts['json']['points'][0];
+
+                    return self::UUID_A === $point['id']
+                        && $vector === $point['vector']
+                        && 'Trail Shoes' === $point['payload']['name']
+                        && 'Lightweight trail running shoes' === $point['payload']['semantic_description'];
+                }),
+            )
+            ->willReturn($response);
+
+        $this->repository->index($product, $embedding);
     }
 }
