@@ -61,8 +61,8 @@ final class QdrantProductSearchRepositoryTest extends TestCase
         $this->assertCount(2, $results);
         $this->assertContainsOnlyInstancesOf(SearchResult::class, $results);
         $this->assertSame(self::UUID_A, $results[0]->productId->value());
-        $this->assertSame('Shoes', $results[0]->name);
-        $this->assertSame('Trail running shoes', $results[0]->semanticDescription);
+        $this->assertSame('Shoes', $results[0]->name->value());
+        $this->assertSame('Trail running shoes', $results[0]->semanticDescription->value());
         $this->assertSame(0.95, $results[0]->score);
         $this->assertSame(self::UUID_B, $results[1]->productId->value());
         $this->assertSame(0.82, $results[1]->score);

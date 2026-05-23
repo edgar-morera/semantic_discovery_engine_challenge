@@ -8,8 +8,8 @@ final readonly class SearchResult
 {
     public function __construct(
         public ProductId $productId,
-        public string $name,
-        public string $semanticDescription,
+        public ProductName $name,
+        public ProductSemanticDescription $semanticDescription,
         public float $score,
     ) {
     }

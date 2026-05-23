@@ -8,6 +8,8 @@ use App\Product\Domain\Model\Product;
 use App\Product\Domain\Port\ProductSearchPort;
 use App\Product\Domain\ValueObject\Embedding;
 use App\Product\Domain\ValueObject\ProductId;
+use App\Product\Domain\ValueObject\ProductName;
+use App\Product\Domain\ValueObject\ProductSemanticDescription;
 use App\Product\Domain\ValueObject\SearchResult;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -65,8 +67,8 @@ final class QdrantProductSearchRepository implements ProductSearchPort
         return array_map(
             static fn (array $hit) => new SearchResult(
                 new ProductId($hit['id']),
-                $hit['payload']['name'],
-                $hit['payload']['semantic_description'],
+                new ProductName($hit['payload']['name']),
+                new ProductSemanticDescription($hit['payload']['semantic_description']),
                 $hit['score'],
             ),
             $body['result'],

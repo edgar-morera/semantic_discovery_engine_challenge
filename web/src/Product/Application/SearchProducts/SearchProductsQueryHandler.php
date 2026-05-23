@@ -30,8 +30,8 @@ final class SearchProductsQueryHandler
         return array_map(
             static fn ($result) => new SearchProductsResponse(
                 id: $result->productId->value(),
-                name: $result->name,
-                semanticDescription: $result->semanticDescription,
+                name: $result->name->value(),
+                semanticDescription: $result->semanticDescription->value(),
                 score: $result->score,
             ),
             $this->productSearchPort->search($embedding, $query->limit),
