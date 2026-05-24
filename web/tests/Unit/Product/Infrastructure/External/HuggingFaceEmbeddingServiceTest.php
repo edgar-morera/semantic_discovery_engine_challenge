@@ -78,4 +78,16 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
 
         $this->service->generate(new ProductSemanticDescription('some description'));
     }
+
+    public function testThrowsRuntimeExceptionWhenFirstElementIsNotFloat(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('toArray')->willReturn([1, 2, 3]);
+
+        $this->httpClient->method('request')->willReturn($response);
+
+        $this->expectException(\RuntimeException::class);
+
+        $this->service->generate(new ProductSemanticDescription('some description'));
+    }
 }

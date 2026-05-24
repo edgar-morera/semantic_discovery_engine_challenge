@@ -68,6 +68,25 @@ final class CachedEmbeddingServiceTest extends TestCase
         $this->assertSame($values, $result->values());
     }
 
+    public function testExceptionFromInnerServicePropagatesWithoutCaching(): void
+    {
+        $description = new ProductSemanticDescription('trail running shoes');
+
+        $item = $this->createMock(CacheItemInterface::class);
+        $item->method('isHit')->willReturn(false);
+
+        $this->cache->method('getItem')->willReturn($item);
+        $this->cache->expects($this->never())->method('save');
+
+        $this->inner
+            ->method('generate')
+            ->willThrowException(new \RuntimeException('API unavailable'));
+
+        $this->expectException(\RuntimeException::class);
+
+        $this->service->generate($description);
+    }
+
     public function testSameCacheKeyForSameDescription(): void
     {
         $desc = new ProductSemanticDescription('trail running shoes');

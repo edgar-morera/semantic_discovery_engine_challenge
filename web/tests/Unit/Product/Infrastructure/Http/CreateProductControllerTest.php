@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Product\Infrastructure\Http;
 
+use App\Product\Domain\Exception\InvalidProductNameException;
+use App\Product\Domain\Exception\InvalidProductSemanticDescriptionException;
 use App\Product\Domain\Port\ProductIdGenerator;
 use App\Product\Domain\ValueObject\ProductId;
 use App\Product\Infrastructure\Http\CreateProductController;
@@ -62,6 +64,47 @@ final class CreateProductControllerTest extends TestCase
         $this->commandBus->expects($this->never())->method('dispatch');
 
         self::assertSame(Response::HTTP_BAD_REQUEST, ($this->controller)($this->buildRequest(['name' => 'Some product']))->getStatusCode());
+    }
+
+    public function testReturns400WhenBodyIsEmpty(): void
+    {
+        $this->idGenerator->expects($this->never())->method('generate');
+        $this->commandBus->expects($this->never())->method('dispatch');
+
+        $request = new Request(content: '');
+        self::assertSame(Response::HTTP_BAD_REQUEST, ($this->controller)($request)->getStatusCode());
+    }
+
+    public function testReturns400WithMessageWhenNameIsBlank(): void
+    {
+        $this->idGenerator
+            ->method('generate')
+            ->willReturn(new ProductId(self::FIXED_UUID));
+
+        $this->commandBus
+            ->method('dispatch')
+            ->willThrowException(new InvalidProductNameException('Product name cannot be empty.'));
+
+        $response = ($this->controller)($this->buildRequest(['name' => '   ', 'semanticDescription' => 'Valid description']));
+
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        self::assertSame('Product name cannot be empty.', json_decode($response->getContent(), true)['error']);
+    }
+
+    public function testReturns400WithMessageWhenSemanticDescriptionIsBlank(): void
+    {
+        $this->idGenerator
+            ->method('generate')
+            ->willReturn(new ProductId(self::FIXED_UUID));
+
+        $this->commandBus
+            ->method('dispatch')
+            ->willThrowException(new InvalidProductSemanticDescriptionException('Semantic description cannot be empty.'));
+
+        $response = ($this->controller)($this->buildRequest(['name' => 'Valid name', 'semanticDescription' => '   ']));
+
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        self::assertSame('Semantic description cannot be empty.', json_decode($response->getContent(), true)['error']);
     }
 
     private function buildRequest(array $body): Request

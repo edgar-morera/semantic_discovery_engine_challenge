@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Product\Infrastructure\Http;
 
 use App\Product\Application\CreateProduct\CreateProductCommand;
+use App\Product\Domain\Exception\InvalidProductNameException;
+use App\Product\Domain\Exception\InvalidProductSemanticDescriptionException;
 use App\Product\Domain\Port\ProductIdGenerator;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -61,11 +64,21 @@ final class CreateProductController
 
         $id = $this->idGenerator->generate();
 
-        $this->commandBus->dispatch(new CreateProductCommand(
-            id: $id->value(),
-            name: (string) $body['name'],
-            semanticDescription: (string) $body['semanticDescription'],
-        ));
+        try {
+            $this->commandBus->dispatch(new CreateProductCommand(
+                id: $id->value(),
+                name: (string) $body['name'],
+                semanticDescription: (string) $body['semanticDescription'],
+            ));
+        } catch (\Throwable $e) {
+            $cause = $e instanceof HandlerFailedException ? current($e->getNestedExceptions()) : $e;
+
+            if ($cause instanceof InvalidProductNameException || $cause instanceof InvalidProductSemanticDescriptionException) {
+                return new JsonResponse(['error' => $cause->getMessage()], Response::HTTP_BAD_REQUEST);
+            }
+
+            throw $e;
+        }
 
         return new JsonResponse(['id' => $id->value()], Response::HTTP_CREATED);
     }
