@@ -8,18 +8,12 @@ use App\Product\Domain\Exception\InvalidEmbeddingException;
 
 final class Embedding
 {
-    public const int DIMENSIONS = 384;
-
     /** @var float[] */
     private readonly array $values;
 
     /** @param array<int, mixed> $values */
     public function __construct(array $values)
     {
-        if (self::DIMENSIONS !== count($values)) {
-            throw InvalidEmbeddingException::wrongDimensions(count($values));
-        }
-
         foreach ($values as $index => $element) {
             if (!is_numeric($element) || is_nan((float) $element) || is_infinite((float) $element)) {
                 throw InvalidEmbeddingException::nonNumericElement($index);

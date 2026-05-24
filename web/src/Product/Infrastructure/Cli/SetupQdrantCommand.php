@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Product\Infrastructure\Cli;
 
-use App\Product\Domain\ValueObject\Embedding;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,6 +18,7 @@ final class SetupQdrantCommand extends Command
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly string $qdrantDsn,
+        private readonly int $embeddingDimensions,
     ) {
         parent::__construct();
     }
@@ -39,7 +39,7 @@ final class SetupQdrantCommand extends Command
             'headers' => ['Content-Type' => 'application/json'],
             'json' => [
                 'vectors' => [
-                    'size' => Embedding::DIMENSIONS,
+                    'size' => $this->embeddingDimensions,
                     'distance' => 'Cosine',
                 ],
             ],

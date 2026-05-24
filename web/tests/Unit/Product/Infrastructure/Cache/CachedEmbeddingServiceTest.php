@@ -29,7 +29,7 @@ final class CachedEmbeddingServiceTest extends TestCase
     public function testCallsInnerAndCachesOnMiss(): void
     {
         $description = new ProductSemanticDescription('trail running shoes');
-        $values = array_fill(0, Embedding::DIMENSIONS, 0.1);
+        $values = array_fill(0, 384, 0.1);
         $embedding = new Embedding($values);
 
         $item = $this->createMock(CacheItemInterface::class);
@@ -52,7 +52,7 @@ final class CachedEmbeddingServiceTest extends TestCase
     public function testReturnsCachedEmbeddingWithoutCallingInnerOnHit(): void
     {
         $description = new ProductSemanticDescription('trail running shoes');
-        $values = array_fill(0, Embedding::DIMENSIONS, 0.2);
+        $values = array_fill(0, 384, 0.2);
 
         $item = $this->createMock(CacheItemInterface::class);
         $item->method('isHit')->willReturn(true);
@@ -90,7 +90,7 @@ final class CachedEmbeddingServiceTest extends TestCase
     public function testSameCacheKeyForSameDescription(): void
     {
         $desc = new ProductSemanticDescription('trail running shoes');
-        $values = array_fill(0, Embedding::DIMENSIONS, 0.1);
+        $values = array_fill(0, 384, 0.1);
         $embedding = new Embedding($values);
 
         $item = $this->createMock(CacheItemInterface::class);

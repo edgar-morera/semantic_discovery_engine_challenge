@@ -20,12 +20,18 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->httpClient = $this->createMock(HttpClientInterface::class);
-        $this->service = new HuggingFaceEmbeddingService($this->httpClient, 'test-api-key');
+        $this->service = new HuggingFaceEmbeddingService(
+            $this->httpClient,
+            'test-api-key',
+            'https://router.huggingface.co/hf-inference/models',
+            'test-model',
+            384,
+        );
     }
 
     public function testReturnsEmbeddingFromApiResponse(): void
     {
-        $vector = array_fill(0, Embedding::DIMENSIONS, 0.1);
+        $vector = array_fill(0, 384, 0.1);
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn($vector);
 
@@ -34,7 +40,7 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
             ->method('request')
             ->with(
                 'POST',
-                $this->stringContains('granite-embedding-97m-multilingual'),
+                'https://router.huggingface.co/hf-inference/models/test-model',
                 $this->arrayHasKey('json'),
             )
             ->willReturn($response);
@@ -48,7 +54,7 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
 
     public function testSendsAuthorizationHeaderWithApiKey(): void
     {
-        $vector = array_fill(0, Embedding::DIMENSIONS, 0.0);
+        $vector = array_fill(0, 384, 0.0);
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn($vector);
 
@@ -87,6 +93,19 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
         $this->httpClient->method('request')->willReturn($response);
 
         $this->expectException(\RuntimeException::class);
+
+        $this->service->generate(new ProductSemanticDescription('some description'));
+    }
+
+    public function testThrowsRuntimeExceptionOnWrongDimensionCount(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('toArray')->willReturn(array_fill(0, 128, 0.1));
+
+        $this->httpClient->method('request')->willReturn($response);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Expected 384 dimensions');
 
         $this->service->generate(new ProductSemanticDescription('some description'));
     }

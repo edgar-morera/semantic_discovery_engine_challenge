@@ -29,6 +29,9 @@ services:
     App\Product\Infrastructure\External\HuggingFaceEmbeddingService:
         arguments:
             $apiKey: '%env(HUGGINGFACE_API_KEY)%'
+            $apiUrl: '%env(HUGGINGFACE_API_URL)%'
+            $model: '%env(HUGGINGFACE_MODEL)%'
+            $dimensions: '%env(int:EMBEDDING_DIMENSIONS)%'
 
     App\Product\Infrastructure\Persistence\Qdrant\QdrantProductSearchRepository:
         arguments:
@@ -37,3 +40,4 @@ services:
     App\Product\Infrastructure\Cli\SetupQdrantCommand:
         arguments:
             $qdrantDsn: '%env(QDRANT_DSN)%'
+            $embeddingDimensions: '%env(int:EMBEDDING_DIMENSIONS)%'

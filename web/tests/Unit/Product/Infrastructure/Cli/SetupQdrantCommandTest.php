@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Product\Infrastructure\Cli;
 
-use App\Product\Domain\ValueObject\Embedding;
 use App\Product\Infrastructure\Cli\SetupQdrantCommand;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +20,7 @@ final class SetupQdrantCommandTest extends TestCase
     protected function setUp(): void
     {
         $this->httpClient = $this->createMock(HttpClientInterface::class);
-        $command = new SetupQdrantCommand($this->httpClient, 'http://qdrant:6333');
+        $command = new SetupQdrantCommand($this->httpClient, 'http://qdrant:6333', 384);
         $this->tester = new CommandTester($command);
     }
 
@@ -60,7 +59,7 @@ final class SetupQdrantCommandTest extends TestCase
 
                     $this->assertSame('PUT', $method);
                     $this->assertSame('http://qdrant:6333/collections/products', $url);
-                    $this->assertSame(Embedding::DIMENSIONS, $options['json']['vectors']['size']);
+                    $this->assertSame(384, $options['json']['vectors']['size']);
                     $this->assertSame('Cosine', $options['json']['vectors']['distance']);
 
                     return $putResponse;

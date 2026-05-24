@@ -44,7 +44,7 @@ final class IndexProductCommandHandlerTest extends TestCase
     public function testIndexesProductWhenItExists(): void
     {
         $product = $this->make_product();
-        $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
+        $embedding = new Embedding(array_fill(0, 384, 0.1));
 
         $this->productRepository
             ->expects($this->once())

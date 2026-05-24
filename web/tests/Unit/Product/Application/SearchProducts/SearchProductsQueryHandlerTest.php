@@ -41,7 +41,7 @@ final class SearchProductsQueryHandlerTest extends TestCase
 
     public function testMapsSearchResultsToResponsesPreservingOrder(): void
     {
-        $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
+        $embedding = new Embedding(array_fill(0, 384, 0.1));
 
         $this->embeddingService->method('generate')->willReturn($embedding);
 
@@ -68,7 +68,7 @@ final class SearchProductsQueryHandlerTest extends TestCase
 
     public function testReturnsEmptyArrayWhenNoResults(): void
     {
-        $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
+        $embedding = new Embedding(array_fill(0, 384, 0.1));
 
         $this->embeddingService->method('generate')->willReturn($embedding);
         $this->productSearchPort->method('search')->willReturn([]);
@@ -80,7 +80,7 @@ final class SearchProductsQueryHandlerTest extends TestCase
 
     public function testRespectsLimitParameter(): void
     {
-        $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
+        $embedding = new Embedding(array_fill(0, 384, 0.1));
 
         $this->embeddingService->method('generate')->willReturn($embedding);
 

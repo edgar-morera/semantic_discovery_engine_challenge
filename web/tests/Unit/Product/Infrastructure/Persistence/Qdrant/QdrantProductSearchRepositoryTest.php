@@ -33,7 +33,7 @@ final class QdrantProductSearchRepositoryTest extends TestCase
 
     public function testSearchCallsQdrantWithVectorAndLimit(): void
     {
-        $vector = array_fill(0, Embedding::DIMENSIONS, 0.1);
+        $vector = array_fill(0, 384, 0.1);
         $embedding = new Embedding($vector);
 
         $response = $this->createMock(ResponseInterface::class);
@@ -71,7 +71,7 @@ final class QdrantProductSearchRepositoryTest extends TestCase
 
     public function testSearchReturnsEmptyArrayWhenNoResults(): void
     {
-        $embedding = new Embedding(array_fill(0, Embedding::DIMENSIONS, 0.1));
+        $embedding = new Embedding(array_fill(0, 384, 0.1));
 
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn(['result' => []]);
@@ -90,7 +90,7 @@ final class QdrantProductSearchRepositoryTest extends TestCase
             new ProductName('Trail Shoes'),
             new ProductSemanticDescription('Lightweight trail running shoes'),
         );
-        $vector = array_fill(0, Embedding::DIMENSIONS, 0.3);
+        $vector = array_fill(0, 384, 0.3);
         $embedding = new Embedding($vector);
 
         $response = $this->createMock(ResponseInterface::class);
