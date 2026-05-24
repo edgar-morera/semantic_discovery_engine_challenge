@@ -14,6 +14,7 @@ use App\Product\Domain\ValueObject\Embedding;
 use App\Product\Domain\ValueObject\ProductId;
 use App\Product\Domain\ValueObject\ProductName;
 use App\Product\Domain\ValueObject\ProductSemanticDescription;
+use App\Product\Domain\ValueObject\SearchLimit;
 use App\Product\Domain\ValueObject\SearchResult;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -47,7 +48,7 @@ final class SearchProductsQueryHandlerTest extends TestCase
         $this->productSearchPort
             ->expects($this->once())
             ->method('search')
-            ->with($embedding, 10)
+            ->with($embedding, new SearchLimit(10))
             ->willReturn([
                 new SearchResult(new ProductId(self::UUID_A), new ProductName('Shoes'), new ProductSemanticDescription('Trail running shoes'), 0.95),
                 new SearchResult(new ProductId(self::UUID_B), new ProductName('Jacket'), new ProductSemanticDescription('Waterproof jacket'), 0.82),
@@ -86,7 +87,7 @@ final class SearchProductsQueryHandlerTest extends TestCase
         $this->productSearchPort
             ->expects($this->once())
             ->method('search')
-            ->with($embedding, 5)
+            ->with($embedding, new SearchLimit(5))
             ->willReturn([]);
 
         ($this->handler)(new SearchProductsQuery('test', 5));

@@ -6,11 +6,15 @@ namespace App\Product\Infrastructure\Http;
 
 use App\Product\Application\SearchProducts\SearchProductsQuery;
 use App\Product\Application\SearchProducts\SearchProductsResponse;
+use App\Product\Domain\Exception\InvalidProductSemanticDescriptionException;
+use App\Product\Domain\Exception\InvalidSearchLimitException;
+use App\Product\Domain\ValueObject\SearchLimit;
 use OpenApi\Attributes as OA;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,8 +22,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: 'Products')]
 final class SearchProductsController
 {
-    private const int DEFAULT_LIMIT = 10;
-    private const int MAX_LIMIT = 50;
 
     public function __construct(
         #[Target('query.bus')]
@@ -65,9 +67,20 @@ final class SearchProductsController
             );
         }
 
-        $limit = min(self::MAX_LIMIT, max(1, (int) $request->query->get('limit', self::DEFAULT_LIMIT)));
+        $rawLimit = $request->query->get('limit');
+        $limit = null !== $rawLimit ? (int) $rawLimit : SearchLimit::DEFAULT_VALUE;
 
-        $envelope = $this->queryBus->dispatch(new SearchProductsQuery($queryText, $limit));
+        try {
+            $envelope = $this->queryBus->dispatch(new SearchProductsQuery($queryText, $limit));
+        } catch (\Throwable $e) {
+            $cause = $e instanceof HandlerFailedException ? current($e->getNestedExceptions()) : $e;
+
+            if ($cause instanceof InvalidProductSemanticDescriptionException || $cause instanceof InvalidSearchLimitException) {
+                return new JsonResponse(['error' => $cause->getMessage()], Response::HTTP_BAD_REQUEST);
+            }
+
+            throw $e;
+        }
 
         /** @var SearchProductsResponse[] $results */
         $results = $envelope->last(HandledStamp::class)->getResult();

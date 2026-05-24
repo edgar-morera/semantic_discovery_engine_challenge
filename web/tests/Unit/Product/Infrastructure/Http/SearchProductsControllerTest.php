@@ -6,6 +6,8 @@ namespace App\Tests\Unit\Product\Infrastructure\Http;
 
 use App\Product\Application\SearchProducts\SearchProductsQuery;
 use App\Product\Application\SearchProducts\SearchProductsResponse;
+use App\Product\Domain\Exception\InvalidProductSemanticDescriptionException;
+use App\Product\Domain\Exception\InvalidSearchLimitException;
 use App\Product\Infrastructure\Http\SearchProductsController;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -60,22 +62,6 @@ final class SearchProductsControllerTest extends TestCase
         $this->assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
     }
 
-    public function testClampsLimitToMaximum50(): void
-    {
-        $envelope = new Envelope(new SearchProductsQuery('test', 50), [new HandledStamp([], 'handler')]);
-
-        $this->queryBus
-            ->expects($this->once())
-            ->method('dispatch')
-            ->with($this->callback(
-                fn (SearchProductsQuery $q) => 50 === $q->limit
-            ))
-            ->willReturn($envelope);
-
-        $request = Request::create('/products/search', 'GET', ['q' => 'test', 'limit' => '200']);
-        ($this->controller)($request);
-    }
-
     public function testUsesDefaultLimitOf10(): void
     {
         $envelope = new Envelope(new SearchProductsQuery('test', 10), [new HandledStamp([], 'handler')]);
@@ -90,5 +76,67 @@ final class SearchProductsControllerTest extends TestCase
 
         $request = Request::create('/products/search', 'GET', ['q' => 'test']);
         ($this->controller)($request);
+    }
+
+    public function testReturns400WhenQIsEmptyString(): void
+    {
+        $this->queryBus->expects($this->never())->method('dispatch');
+
+        $request = Request::create('/products/search', 'GET', ['q' => '']);
+        $response = ($this->controller)($request);
+
+        $this->assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+    }
+
+    public function testReturns400WithMessageWhenQIsWhitespaceOnly(): void
+    {
+        $this->queryBus
+            ->method('dispatch')
+            ->willThrowException(new InvalidProductSemanticDescriptionException('Semantic description cannot be empty.'));
+
+        $request = Request::create('/products/search', 'GET', ['q' => '   ']);
+        $response = ($this->controller)($request);
+
+        $this->assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertSame('Semantic description cannot be empty.', json_decode($response->getContent(), true)['error']);
+    }
+
+    public function testReturns400WithMessageWhenLimitExceedsMaximum(): void
+    {
+        $this->queryBus
+            ->method('dispatch')
+            ->willThrowException(new InvalidSearchLimitException('Search limit must be between 1 and 50, 200 given.'));
+
+        $request = Request::create('/products/search', 'GET', ['q' => 'test', 'limit' => '200']);
+        $response = ($this->controller)($request);
+
+        $this->assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertSame('Search limit must be between 1 and 50, 200 given.', json_decode($response->getContent(), true)['error']);
+    }
+
+    public function testReturns400WithMessageWhenLimitIsNegative(): void
+    {
+        $this->queryBus
+            ->method('dispatch')
+            ->willThrowException(new InvalidSearchLimitException('Search limit must be between 1 and 50, -5 given.'));
+
+        $request = Request::create('/products/search', 'GET', ['q' => 'test', 'limit' => '-5']);
+        $response = ($this->controller)($request);
+
+        $this->assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+    }
+
+    public function testAcceptsLimitAtBoundaries(): void
+    {
+        $envelopeLower = new Envelope(new SearchProductsQuery('test', 1), [new HandledStamp([], 'handler')]);
+        $envelopeUpper = new Envelope(new SearchProductsQuery('test', 50), [new HandledStamp([], 'handler')]);
+
+        $this->queryBus
+            ->expects($this->exactly(2))
+            ->method('dispatch')
+            ->willReturnOnConsecutiveCalls($envelopeLower, $envelopeUpper);
+
+        ($this->controller)(Request::create('/products/search', 'GET', ['q' => 'test', 'limit' => '1']));
+        ($this->controller)(Request::create('/products/search', 'GET', ['q' => 'test', 'limit' => '50']));
     }
 }

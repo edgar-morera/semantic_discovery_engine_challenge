@@ -9,6 +9,7 @@ use App\Product\Domain\ValueObject\Embedding;
 use App\Product\Domain\ValueObject\ProductId;
 use App\Product\Domain\ValueObject\ProductName;
 use App\Product\Domain\ValueObject\ProductSemanticDescription;
+use App\Product\Domain\ValueObject\SearchLimit;
 use App\Product\Domain\ValueObject\SearchResult;
 use App\Product\Infrastructure\Persistence\Qdrant\QdrantProductSearchRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -56,7 +57,7 @@ final class QdrantProductSearchRepositoryTest extends TestCase
             )
             ->willReturn($response);
 
-        $results = $this->repository->search($embedding, 5);
+        $results = $this->repository->search($embedding, new SearchLimit(5));
 
         $this->assertCount(2, $results);
         $this->assertContainsOnlyInstancesOf(SearchResult::class, $results);
@@ -77,7 +78,7 @@ final class QdrantProductSearchRepositoryTest extends TestCase
 
         $this->httpClient->method('request')->willReturn($response);
 
-        $results = $this->repository->search($embedding, 10);
+        $results = $this->repository->search($embedding, new SearchLimit(10));
 
         $this->assertSame([], $results);
     }

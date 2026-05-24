@@ -6,6 +6,7 @@ namespace App\Product\Domain\Port;
 
 use App\Product\Domain\Model\Product;
 use App\Product\Domain\ValueObject\Embedding;
+use App\Product\Domain\ValueObject\SearchLimit;
 use App\Product\Domain\ValueObject\SearchResult;
 
 interface ProductSearchPort
@@ -15,5 +16,5 @@ interface ProductSearchPort
     /**
      * @return SearchResult[]
      */
-    public function search(Embedding $query, int $limit): array;
+    public function search(Embedding $query, SearchLimit $limit): array;
 }

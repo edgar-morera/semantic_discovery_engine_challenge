@@ -7,6 +7,7 @@ namespace App\Product\Application\SearchProducts;
 use App\Product\Domain\Port\EmbeddingService;
 use App\Product\Domain\Port\ProductSearchPort;
 use App\Product\Domain\ValueObject\ProductSemanticDescription;
+use App\Product\Domain\ValueObject\SearchLimit;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(bus: 'query.bus')]
@@ -27,6 +28,8 @@ final class SearchProductsQueryHandler
             new ProductSemanticDescription($query->queryText),
         );
 
+        $limit = new SearchLimit($query->limit);
+
         return array_map(
             static fn ($result) => new SearchProductsResponse(
                 id: $result->productId->value(),
@@ -34,7 +37,7 @@ final class SearchProductsQueryHandler
                 semanticDescription: $result->semanticDescription->value(),
                 score: $result->score,
             ),
-            $this->productSearchPort->search($embedding, $query->limit),
+            $this->productSearchPort->search($embedding, $limit),
         );
     }
 }

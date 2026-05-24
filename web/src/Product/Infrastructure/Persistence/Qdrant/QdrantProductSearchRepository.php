@@ -10,6 +10,7 @@ use App\Product\Domain\ValueObject\Embedding;
 use App\Product\Domain\ValueObject\ProductId;
 use App\Product\Domain\ValueObject\ProductName;
 use App\Product\Domain\ValueObject\ProductSemanticDescription;
+use App\Product\Domain\ValueObject\SearchLimit;
 use App\Product\Domain\ValueObject\SearchResult;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -46,7 +47,7 @@ final class QdrantProductSearchRepository implements ProductSearchPort
         )->getStatusCode();
     }
 
-    public function search(Embedding $query, int $limit): array
+    public function search(Embedding $query, SearchLimit $limit): array
     {
         $response = $this->httpClient->request(
             'POST',
@@ -55,7 +56,7 @@ final class QdrantProductSearchRepository implements ProductSearchPort
                 'headers' => ['Content-Type' => 'application/json'],
                 'json' => [
                     'vector' => $query->values(),
-                    'limit' => $limit,
+                    'limit' => $limit->value(),
                     'with_payload' => true,
                 ],
             ],
