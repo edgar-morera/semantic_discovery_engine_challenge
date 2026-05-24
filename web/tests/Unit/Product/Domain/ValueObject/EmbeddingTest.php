@@ -84,4 +84,24 @@ final class EmbeddingTest extends TestCase
     {
         $this->assertSame(384, Embedding::DIMENSIONS);
     }
+
+    public function testThrowsForNanElement(): void
+    {
+        $values = array_fill(0, Embedding::DIMENSIONS, 0.1);
+        $values[5] = NAN;
+
+        $this->expectException(InvalidEmbeddingException::class);
+
+        new Embedding($values);
+    }
+
+    public function testThrowsForInfiniteElement(): void
+    {
+        $values = array_fill(0, Embedding::DIMENSIONS, 0.1);
+        $values[5] = INF;
+
+        $this->expectException(InvalidEmbeddingException::class);
+
+        new Embedding($values);
+    }
 }

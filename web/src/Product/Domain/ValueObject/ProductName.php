@@ -10,7 +10,9 @@ final class ProductName
 {
     private const MAX_LENGTH = 255;
 
-    public function __construct(private readonly string $value)
+    private readonly string $value;
+
+    public function __construct(string $value)
     {
         $trimmed = trim($value);
 
@@ -21,6 +23,8 @@ final class ProductName
         if (mb_strlen($trimmed) > self::MAX_LENGTH) {
             throw new InvalidProductNameException(sprintf('Product name cannot exceed %d characters.', self::MAX_LENGTH));
         }
+
+        $this->value = $trimmed;
     }
 
     public function value(): string

@@ -21,7 +21,7 @@ final class Embedding
         }
 
         foreach ($values as $index => $element) {
-            if (!is_numeric($element)) {
+            if (!is_numeric($element) || is_nan((float) $element) || is_infinite((float) $element)) {
                 throw InvalidEmbeddingException::nonNumericElement($index);
             }
         }

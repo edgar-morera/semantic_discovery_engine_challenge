@@ -8,11 +8,17 @@ use App\Product\Domain\Exception\InvalidProductSemanticDescriptionException;
 
 final class ProductSemanticDescription
 {
-    public function __construct(private readonly string $value)
+    private readonly string $value;
+
+    public function __construct(string $value)
     {
-        if ('' === trim($value)) {
+        $trimmed = trim($value);
+
+        if ('' === $trimmed) {
             throw new InvalidProductSemanticDescriptionException('Semantic description cannot be empty.');
         }
+
+        $this->value = $trimmed;
     }
 
     public function value(): string

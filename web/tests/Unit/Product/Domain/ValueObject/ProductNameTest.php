@@ -63,4 +63,25 @@ final class ProductNameTest extends TestCase
 
         $this->assertSame(255, mb_strlen($name->value()));
     }
+
+    public function testTrimsLeadingAndTrailingWhitespace(): void
+    {
+        $name = new ProductName('  Running shoes  ');
+
+        $this->assertSame('Running shoes', $name->value());
+    }
+
+    public function testAcceptsNameOfExactly255MultibytechAracters(): void
+    {
+        $name = new ProductName(str_repeat('á', 255));
+
+        $this->assertSame(255, mb_strlen($name->value()));
+    }
+
+    public function testThrowsExceptionWhenMultibyteNameExceeds255Characters(): void
+    {
+        $this->expectException(InvalidProductNameException::class);
+
+        new ProductName(str_repeat('á', 256));
+    }
 }

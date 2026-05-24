@@ -49,4 +49,11 @@ final class ProductSemanticDescriptionTest extends TestCase
 
         new ProductSemanticDescription($value);
     }
+
+    public function testTrimsLeadingAndTrailingWhitespace(): void
+    {
+        $description = new ProductSemanticDescription('  Warm gloves  ');
+
+        $this->assertSame('Warm gloves', $description->value());
+    }
 }
