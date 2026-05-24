@@ -26,7 +26,7 @@ final class Embedding
             }
         }
 
-        $this->values = array_map(fn (mixed $v): float => (float) $v, $values);
+        $this->values = array_map(static fn (mixed $v): float => (float) $v, $values);
     }
 
     /** @return float[] */
