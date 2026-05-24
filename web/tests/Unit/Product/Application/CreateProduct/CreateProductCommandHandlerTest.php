@@ -6,6 +6,9 @@ namespace App\Tests\Unit\Product\Application\CreateProduct;
 
 use App\Product\Application\CreateProduct\CreateProductCommand;
 use App\Product\Application\CreateProduct\CreateProductCommandHandler;
+use App\Product\Domain\Exception\InvalidProductIdException;
+use App\Product\Domain\Exception\InvalidProductNameException;
+use App\Product\Domain\Exception\InvalidProductSemanticDescriptionException;
 use App\Product\Domain\Model\Product;
 use App\Product\Domain\Repository\ProductRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -36,5 +39,44 @@ final class CreateProductCommandHandlerTest extends TestCase
             ->with($this->isInstanceOf(Product::class));
 
         ($this->handler)($command);
+    }
+
+    public function testThrowsExceptionForInvalidProductId(): void
+    {
+        $this->repository->expects($this->never())->method('save');
+
+        $this->expectException(InvalidProductIdException::class);
+
+        ($this->handler)(new CreateProductCommand(
+            id: 'not-a-uuid',
+            name: 'Running shoes',
+            semanticDescription: 'Lightweight trail running shoes',
+        ));
+    }
+
+    public function testThrowsExceptionForBlankName(): void
+    {
+        $this->repository->expects($this->never())->method('save');
+
+        $this->expectException(InvalidProductNameException::class);
+
+        ($this->handler)(new CreateProductCommand(
+            id: '550e8400-e29b-41d4-a716-446655440000',
+            name: '   ',
+            semanticDescription: 'Lightweight trail running shoes',
+        ));
+    }
+
+    public function testThrowsExceptionForBlankSemanticDescription(): void
+    {
+        $this->repository->expects($this->never())->method('save');
+
+        $this->expectException(InvalidProductSemanticDescriptionException::class);
+
+        ($this->handler)(new CreateProductCommand(
+            id: '550e8400-e29b-41d4-a716-446655440000',
+            name: 'Running shoes',
+            semanticDescription: '   ',
+        ));
     }
 }

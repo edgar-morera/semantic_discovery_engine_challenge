@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Product\Application\SearchProducts;
 use App\Product\Application\SearchProducts\SearchProductsQuery;
 use App\Product\Application\SearchProducts\SearchProductsQueryHandler;
 use App\Product\Application\SearchProducts\SearchProductsResponse;
+use App\Product\Domain\Exception\InvalidProductSemanticDescriptionException;
 use App\Product\Domain\Port\EmbeddingService;
 use App\Product\Domain\Port\ProductSearchPort;
 use App\Product\Domain\ValueObject\Embedding;
@@ -89,5 +90,15 @@ final class SearchProductsQueryHandlerTest extends TestCase
             ->willReturn([]);
 
         ($this->handler)(new SearchProductsQuery('test', 5));
+    }
+
+    public function testThrowsExceptionForBlankQueryText(): void
+    {
+        $this->embeddingService->expects($this->never())->method('generate');
+        $this->productSearchPort->expects($this->never())->method('search');
+
+        $this->expectException(InvalidProductSemanticDescriptionException::class);
+
+        ($this->handler)(new SearchProductsQuery('   '));
     }
 }

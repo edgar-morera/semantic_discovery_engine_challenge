@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Product\Application\IndexProduct;
 
 use App\Product\Application\IndexProduct\IndexProductCommand;
 use App\Product\Application\IndexProduct\IndexProductCommandHandler;
+use App\Product\Domain\Exception\InvalidProductIdException;
 use App\Product\Domain\Exception\ProductNotFoundException;
 use App\Product\Domain\Model\Product;
 use App\Product\Domain\Port\EmbeddingService;
@@ -77,6 +78,17 @@ final class IndexProductCommandHandlerTest extends TestCase
         $this->expectException(ProductNotFoundException::class);
 
         ($this->handler)(new IndexProductCommand(self::VALID_UUID));
+    }
+
+    public function testThrowsExceptionForInvalidProductId(): void
+    {
+        $this->productRepository->expects($this->never())->method('findById');
+        $this->embeddingService->expects($this->never())->method('generate');
+        $this->productSearchRepository->expects($this->never())->method('index');
+
+        $this->expectException(InvalidProductIdException::class);
+
+        ($this->handler)(new IndexProductCommand('not-a-uuid'));
     }
 
     private function make_product(): Product
