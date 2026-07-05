@@ -4,7 +4,6 @@ services:
       context: .
       dockerfile: .docker/php/Dockerfile
     container_name: semantic_php
-    restart: unless-stopped
     volumes:
       - ./web:/var/www/html
     environment:
@@ -23,7 +22,6 @@ services:
   nginx:
     image: nginx:1.27-alpine
     container_name: semantic_nginx
-    restart: unless-stopped
     ports:
       - "8080:80"
     volumes:
@@ -37,7 +35,6 @@ services:
   mysql:
     image: mysql:8.0
     container_name: semantic_mysql
-    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -58,7 +55,6 @@ services:
   qdrant:
     image: qdrant/qdrant:v1.9.0
     container_name: semantic_qdrant
-    restart: unless-stopped
     ports:
       - "${QDRANT_HTTP_PORT}:6333"
       - "${QDRANT_GRPC_PORT}:6334"
@@ -70,7 +66,6 @@ services:
   redis:
     image: redis:7.2-alpine
     container_name: semantic_redis
-    restart: unless-stopped
     networks:
       - app_network
 
@@ -79,7 +74,6 @@ services:
       context: .
       dockerfile: .docker/php/Dockerfile
     container_name: semantic_worker
-    restart: unless-stopped
     command: ["php", "bin/console", "messenger:consume", "async", "--time-limit=3600", "--memory-limit=128M"]
     volumes:
       - ./web:/var/www/html
