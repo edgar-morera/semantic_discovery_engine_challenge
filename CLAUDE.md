@@ -16,7 +16,6 @@ make restart         # recreate containers (required after .env changes)
 
 # Tests
 make test            # all PHPUnit suites
-make test-unit       # unit suite only
 # Run a single test file
 docker compose exec php php vendor/bin/phpunit tests/Unit/Product/Domain/Model/ProductTest.php
 
@@ -29,7 +28,7 @@ make stan            # PHPStan level 8
 make deptrac         # verify layer dependency rules
 
 # Load sample data
-make seed-products   # inserts 357 products and generates their embeddings (~minutes)
+make seed-products   # inserts 350 products and generates their embeddings (~minutes)
 ```
 
 ## Architecture
@@ -46,7 +45,7 @@ Two independent buses configured in [web/config/packages/messenger.yaml](web/con
 - `command.bus` — wraps handlers in a Doctrine transaction via `doctrine_transaction` middleware
 - `query.bus` — no middleware
 
-`IndexProductCommand` is the only async message: it routes to a Redis Stream (`messenger_index_product`). The `semantic_worker` Docker service consumes this queue. All other commands and queries are handled synchronously.
+`IndexProductCommand` is the only async message: it routes to a Redis Stream (`messenger_index_product`). The `worker` Docker Compose service (container name `semantic_worker`) consumes this queue. All other commands and queries are handled synchronously.
 
 ### Service wiring (ports → adapters)
 | Domain port | Infrastructure adapter |

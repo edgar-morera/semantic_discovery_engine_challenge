@@ -1,7 +1,7 @@
 PHP     = docker compose exec php
 CONSOLE = $(PHP) php bin/console
 
-.PHONY: help init rebuild up restart stop remove seed-products test test-unit lint cs cs-fix stan deptrac phpmd analyse k6-smoke k6-load k6-stress
+.PHONY: help init rebuild up restart stop remove seed-products test lint cs cs-fix stan deptrac phpmd analyse k6-smoke k6-load k6-stress
 
 ## —— Help ————————————————————————————————————————————————————————————————————
 help: ## Show this help
@@ -32,7 +32,7 @@ remove: ## Stop and remove all containers, volumes and images
 	docker compose down --volumes --rmi all
 
 ## —— Database ————————————————————————————————————————————————————————————————
-seed-products: ## Import 357 Siroko products into MySQL
+seed-products: ## Import 350 Siroko products into MySQL
 	$(CONSOLE) app:seed:siroko-products
 
 ## —— Tests ———————————————————————————————————————————————————————————————————

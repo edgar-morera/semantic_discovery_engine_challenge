@@ -97,17 +97,16 @@ Ports
 make help           — Lista todos los comandos disponibles
 
 # Docker
-make build          — Setup inicial: copia .env, construye imágenes, migra y hace seed
+make init           — Setup inicial: copia .env, construye imágenes, migra y configura Qdrant
 make up             — Arranca todos los servicios en background
 make stop           — Para los servicios (mantiene volúmenes)
 make remove         — Elimina contenedores, volúmenes e imágenes
 
 # Base de datos
-make seed-products  — Importa los 357 productos de Siroko en MySQL
+make seed-products  — Importa los 350 productos de Siroko en MySQL
 
 # Tests
 make test           — Ejecuta todos los tests PHPUnit
-make test-unit      — Ejecuta solo la suite unitaria
 
 # Calidad de código
 make cs             — Revisa estilo (PHP CS Fixer, dry-run)
