@@ -41,3 +41,7 @@ services:
         arguments:
             $qdrantDsn: '%env(QDRANT_DSN)%'
             $embeddingDimensions: '%env(int:EMBEDDING_DIMENSIONS)%'
+
+    App\Product\Infrastructure\Cli\CleanK6TestDataCommand:
+        arguments:
+            $qdrantDsn: '%env(QDRANT_DSN)%'

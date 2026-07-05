@@ -20,7 +20,7 @@ export default function () {
     // POST /products
     const createRes = http.post(
         `${BASE_URL}/products`,
-        JSON.stringify({ name: 'Smoke Test Chaleco', semanticDescription: 'Chaleco de ciclismo para test de humo.' }),
+        JSON.stringify({ name: '[k6-test] Smoke Test Chaleco', semanticDescription: 'Chaleco de ciclismo para test de humo.' }),
         { headers: { 'Content-Type': 'application/json' } },
     );
     check(createRes, {

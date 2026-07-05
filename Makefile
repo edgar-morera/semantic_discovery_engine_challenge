@@ -64,8 +64,9 @@ phpmd: ## Run PHP Mess Detector
 analyse: cs stan deptrac phpmd ## Run all static analysis tools
 
 ## —— Performance —————————————————————————————————————————————————————————————
-k6-smoke: ## Smoke test: 1 VU, 10 iterations across all endpoints
+k6-smoke: ## Smoke test: 1 VU, 10 iterations across all endpoints (auto-cleans k6 data after)
 	docker compose --profile k6 run --rm k6 run /scripts/smoke.js
+	$(CONSOLE) app:k6:clean
 
 k6-load: ## Load test: 10 VUs for 60s on GET /products/search
 	docker compose --profile k6 run --rm -e BASE_URL=http://nginx k6 run --out json=/scripts/results/load.json /scripts/load.js
