@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Product\Infrastructure\External;
 
+use App\Product\Domain\Exception\InvalidEmbeddingException;
 use App\Product\Domain\ValueObject\Embedding;
 use App\Product\Domain\ValueObject\ProductSemanticDescription;
 use App\Product\Infrastructure\External\HuggingFaceEmbeddingService;
@@ -73,38 +74,38 @@ final class HuggingFaceEmbeddingServiceTest extends TestCase
         $this->service->generate(new ProductSemanticDescription('some description'));
     }
 
-    public function testThrowsRuntimeExceptionOnUnexpectedResponseFormat(): void
+    public function testThrowsInvalidEmbeddingExceptionOnUnexpectedResponseFormat(): void
     {
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn([]);
 
         $this->httpClient->method('request')->willReturn($response);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(InvalidEmbeddingException::class);
 
         $this->service->generate(new ProductSemanticDescription('some description'));
     }
 
-    public function testThrowsRuntimeExceptionWhenFirstElementIsNotFloat(): void
+    public function testThrowsInvalidEmbeddingExceptionWhenFirstElementIsNotFloat(): void
     {
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn([1, 2, 3]);
 
         $this->httpClient->method('request')->willReturn($response);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(InvalidEmbeddingException::class);
 
         $this->service->generate(new ProductSemanticDescription('some description'));
     }
 
-    public function testThrowsRuntimeExceptionOnWrongDimensionCount(): void
+    public function testThrowsInvalidEmbeddingExceptionOnWrongDimensionCount(): void
     {
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn(array_fill(0, 128, 0.1));
 
         $this->httpClient->method('request')->willReturn($response);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(InvalidEmbeddingException::class);
         $this->expectExceptionMessage('Expected 384 dimensions');
 
         $this->service->generate(new ProductSemanticDescription('some description'));

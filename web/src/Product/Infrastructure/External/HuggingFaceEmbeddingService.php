@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Product\Infrastructure\External;
 
+use App\Product\Domain\Exception\InvalidEmbeddingException;
 use App\Product\Domain\Port\EmbeddingService;
 use App\Product\Domain\ValueObject\Embedding;
 use App\Product\Domain\ValueObject\ProductSemanticDescription;
@@ -35,11 +36,11 @@ final class HuggingFaceEmbeddingService implements EmbeddingService
         $body = $response->toArray();
 
         if (!isset($body[0]) || !is_float($body[0])) {
-            throw new \RuntimeException('Unexpected response format from HuggingFace API.');
+            throw InvalidEmbeddingException::unexpectedResponseFormat();
         }
 
         if ($this->dimensions !== count($body)) {
-            throw new \RuntimeException(sprintf('Expected %d dimensions from HuggingFace API, got %d.', $this->dimensions, count($body)));
+            throw InvalidEmbeddingException::dimensionMismatch($this->dimensions, count($body));
         }
 
         /* @var float[] $body */

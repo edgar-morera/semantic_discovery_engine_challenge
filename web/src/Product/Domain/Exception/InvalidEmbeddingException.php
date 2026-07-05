@@ -13,4 +13,18 @@ final class InvalidEmbeddingException extends \DomainException
             $index,
         ));
     }
+
+    public static function unexpectedResponseFormat(): self
+    {
+        return new self('Unexpected response format from embedding provider.');
+    }
+
+    public static function dimensionMismatch(int $expected, int $actual): self
+    {
+        return new self(sprintf(
+            'Expected %d dimensions from embedding provider, got %d.',
+            $expected,
+            $actual,
+        ));
+    }
 }
