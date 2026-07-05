@@ -33,7 +33,7 @@ export default function () {
     // POST /products/{id}/index
     const indexRes = http.post(`${BASE_URL}/products/${productId}/index`);
     check(indexRes, {
-        'POST /products/{id}/index → 204': (r) => r.status === 204,
+        'POST /products/{id}/index → 202': (r) => r.status === 202,
     });
 
     // GET /products/search
