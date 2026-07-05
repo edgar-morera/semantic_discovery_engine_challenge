@@ -10,6 +10,13 @@ CHALLENGE.md
 # PHPUnit local override
 /web/phpunit.xml
 
+# Local tool caches
+/web/.deptrac.cache
+/web/.phpunit.result.cache
+
+# Claude Code local settings
+/.claude/settings.local.json
+
 # IDE
 /.idea/
 /.vscode/
