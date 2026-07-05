@@ -117,7 +117,7 @@ make phpmd          — PHP Mess Detector
 make analyse        — Ejecuta cs + stan + deptrac + phpmd
 
 # Performance
-make k6-smoke       — Smoke test: 1 VU, 10 iteraciones
+make k6-smoke       — Smoke test: 1 VU, 10 iteraciones (limpia los datos de test al finalizar)
 make k6-load        — Load test: 10 VUs durante 60 s
 make k6-stress      — Stress test: rampa de 1 a 50 VUs
 ```
@@ -165,6 +165,14 @@ Load test con k6 (10 VUs, 60 s) sobre `GET /products/search`:
 | max | 10 034 ms | 22 ms |
 
 Mejoras aplicadas: caché de embeddings en Redis (TTL 5 min), indexación asíncrona vía Messenger y pool PHP-FPM ampliado de 5 a 20 workers.
+
+`k6/smoke.js` crea productos de prueba (vía `POST /products`) nombrados con el prefijo `[k6-test]` para poder distinguirlos de los datos reales; `k6-load` y `k6-stress` solo leen `GET /products/search` y no generan datos. `make k6-smoke` limpia los productos `[k6-test]` automáticamente al terminar; si se ejecuta `smoke.js` manualmente, hay que limpiarlos aparte:
+
+```bash
+docker compose exec php php bin/console app:k6:clean
+```
+
+Este comando borra de MySQL y Qdrant todos los productos cuyo nombre empieza por `[k6-test]`.
 
 ---
 
