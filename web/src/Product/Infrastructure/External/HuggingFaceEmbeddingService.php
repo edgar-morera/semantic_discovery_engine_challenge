@@ -39,14 +39,10 @@ final class HuggingFaceEmbeddingService implements EmbeddingService
         }
 
         if ($this->dimensions !== count($body)) {
-            throw new \RuntimeException(sprintf(
-                'Expected %d dimensions from HuggingFace API, got %d.',
-                $this->dimensions,
-                count($body),
-            ));
+            throw new \RuntimeException(sprintf('Expected %d dimensions from HuggingFace API, got %d.', $this->dimensions, count($body)));
         }
 
-        /** @var float[] $body */
+        /* @var float[] $body */
         return new Embedding($body);
     }
 }

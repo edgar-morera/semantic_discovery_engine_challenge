@@ -34,7 +34,7 @@ final class SearchLimitTest extends TestCase
     public static function out_of_range_provider(): array
     {
         return [
-            'zero'     => [0],
+            'zero' => [0],
             'negative' => [-1],
             'above max' => [51],
             'far above' => [100],

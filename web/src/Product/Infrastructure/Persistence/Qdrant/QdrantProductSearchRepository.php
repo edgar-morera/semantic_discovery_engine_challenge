@@ -75,6 +75,4 @@ final class QdrantProductSearchRepository implements ProductSearchPort
             $body['result'],
         );
     }
-
-
 }

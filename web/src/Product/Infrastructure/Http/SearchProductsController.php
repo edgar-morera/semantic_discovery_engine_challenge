@@ -22,7 +22,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: 'Products')]
 final class SearchProductsController
 {
-
     public function __construct(
         #[Target('query.bus')]
         private readonly MessageBusInterface $queryBus,

@@ -16,7 +16,8 @@ final class CachedEmbeddingService implements EmbeddingService
     public function __construct(
         private readonly EmbeddingService $inner,
         private readonly CacheItemPoolInterface $cache,
-    ) {}
+    ) {
+    }
 
     public function generate(ProductSemanticDescription $description): Embedding
     {

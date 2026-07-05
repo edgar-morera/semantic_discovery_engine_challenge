@@ -15,9 +15,7 @@ final class SearchLimit
     public function __construct(private readonly int $value)
     {
         if ($value < self::MIN || $value > self::MAX) {
-            throw new InvalidSearchLimitException(
-                sprintf('Search limit must be between %d and %d, %d given.', self::MIN, self::MAX, $value)
-            );
+            throw new InvalidSearchLimitException(sprintf('Search limit must be between %d and %d, %d given.', self::MIN, self::MAX, $value));
         }
     }
 
