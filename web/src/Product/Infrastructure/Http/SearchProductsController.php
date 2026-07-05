@@ -73,7 +73,7 @@ final class SearchProductsController
         try {
             $envelope = $this->queryBus->dispatch(new SearchProductsQuery($queryText, $limit));
         } catch (\Throwable $e) {
-            $cause = $e instanceof HandlerFailedException ? current($e->getNestedExceptions()) : $e;
+            $cause = $e instanceof HandlerFailedException ? current($e->getWrappedExceptions()) : $e;
 
             if ($cause instanceof InvalidProductSemanticDescriptionException || $cause instanceof InvalidSearchLimitException) {
                 return new JsonResponse(['error' => $cause->getMessage()], Response::HTTP_BAD_REQUEST);
@@ -82,8 +82,11 @@ final class SearchProductsController
             throw $e;
         }
 
+        $stamp = $envelope->last(HandledStamp::class);
+        assert($stamp instanceof HandledStamp, 'query.bus is synchronous — HandledStamp is always present.');
+
         /** @var SearchProductsResponse[] $results */
-        $results = $envelope->last(HandledStamp::class)->getResult();
+        $results = $stamp->getResult();
 
         return new JsonResponse(
             array_map(

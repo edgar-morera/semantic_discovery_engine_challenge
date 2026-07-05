@@ -71,7 +71,7 @@ final class CreateProductController
                 semanticDescription: (string) $body['semanticDescription'],
             ));
         } catch (\Throwable $e) {
-            $cause = $e instanceof HandlerFailedException ? current($e->getNestedExceptions()) : $e;
+            $cause = $e instanceof HandlerFailedException ? current($e->getWrappedExceptions()) : $e;
 
             if ($cause instanceof InvalidProductNameException || $cause instanceof InvalidProductSemanticDescriptionException) {
                 return new JsonResponse(['error' => $cause->getMessage()], Response::HTTP_BAD_REQUEST);
