@@ -108,6 +108,8 @@ src/Product/
 └── Infrastructure/  # HTTP controllers, Doctrine, HuggingFace, Qdrant, Redis
 ```
 
+Diagramas de capas, buses, flujos y wiring de puertos/adaptadores, con el porqué y los trade-offs de cada decisión, en [`docs/arquitectura.md`](docs/arquitectura.md).
+
 ---
 
 ## Stack
@@ -133,7 +135,7 @@ La especificación OpenAPI está disponible en `GET /api/doc` (UI) y `GET /api/d
 | `POST` | `/products/{id}/index` | Encola la generación del embedding (202 Accepted) |
 | `GET` | `/products/search?q=&limit=` | Búsqueda semántica ordenada por relevancia |
 
-Ejemplos de uso de estos endpoints en [Primer uso](#primer-uso).
+Ejemplos de uso de estos endpoints en [Primer uso](#primer-uso). Detalle del flujo de indexación asíncrona en [docs/arquitectura.md, §3](docs/arquitectura.md#3-flujo-de-indexación-asíncrona); detalle del flujo de búsqueda semántica en [docs/arquitectura.md, §4](docs/arquitectura.md#4-flujo-de-búsqueda-semántica).
 
 ---
 
@@ -160,6 +162,8 @@ Ports
 └── ProductSearchPort         — indexa y busca por vector en Qdrant
 ```
 
+Por qué `Embedding` y `SearchResult` no viven en el aggregate ni se persisten en MySQL, con diagrama, en [docs/arquitectura.md, §6](docs/arquitectura.md#6-por-qué-embedding-y-searchresult-no-se-persisten-en-mysql).
+
 ---
 
 ## Performance
@@ -172,7 +176,7 @@ Load test con k6 (10 VUs, 60 s) sobre `GET /products/search`:
 | p95 | 5 220 ms | 15 ms |
 | max | 10 034 ms | 22 ms |
 
-Mejoras aplicadas: caché de embeddings en Redis (TTL 5 min), indexación asíncrona vía Messenger y pool PHP-FPM ampliado de 5 a 20 workers.
+Mejoras aplicadas: caché de embeddings en Redis (TTL 5 min), indexación asíncrona vía Messenger y pool PHP-FPM ampliado de 5 a 20 workers. Rationale y trade-offs de la caché en [docs/arquitectura.md, §4](docs/arquitectura.md#4-flujo-de-búsqueda-semántica) y de la indexación asíncrona en [docs/arquitectura.md, §3](docs/arquitectura.md#3-flujo-de-indexación-asíncrona).
 
 `k6/smoke.js` crea productos de prueba (vía `POST /products`) nombrados con el prefijo `[k6-test]` para poder distinguirlos de los datos reales; `k6-load` y `k6-stress` solo leen `GET /products/search` y no generan datos. `make k6-smoke` limpia los productos `[k6-test]` automáticamente al terminar; si se ejecuta `smoke.js` manualmente, hay que limpiarlos aparte:
 
