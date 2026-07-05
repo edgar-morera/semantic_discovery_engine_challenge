@@ -154,9 +154,13 @@ no del ciclo de vida del producto (ver sección 6).
 garantiza que el producto ya sea buscable inmediatamente después — hay una ventana de
 tiempo entre encolar y que el `worker` lo procese. Si `IndexProductCommandHandler` lanza
 `ProductNotFoundException` (producto borrado entre el encolado y el consumo), Messenger
-reintenta según su política de reintentos por defecto; no hay actualmente un
-dead-letter queue configurado en `messenger.yaml` para mensajes que fallan de forma
-persistente.
+reintenta hasta 3 veces (backoff exponencial x2, delay inicial 1s — valores por defecto,
+sin `retry_strategy` explícito en `messenger.yaml`) y, si sigue fallando, el mensaje cae
+al transporte `failed` (otro Redis Stream, `messenger_index_product_failed`), en vez de
+perderse. Limitación conocida: al ser un Stream de Redis, ese transporte no implementa
+listado por id, así que `messenger:failed:show|retry|remove` no funcionan sobre él —
+`messenger:stats` sí reporta su conteo, y los mensajes solo pueden inspeccionarse
+consumiéndolos directamente (`messenger:consume failed`).
 
 ## 4. Flujo de búsqueda semántica
 

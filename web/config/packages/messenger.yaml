@@ -1,12 +1,17 @@
 framework:
     messenger:
         default_bus: command.bus
+        failure_transport: failed
         transports:
             async:
                 dsn: '%env(REDIS_DSN)%'
                 options:
                     stream: messenger_index_product
                     group: index_product
+            failed:
+                dsn: '%env(REDIS_DSN)%'
+                options:
+                    stream: messenger_index_product_failed
         routing:
             App\Product\Application\IndexProduct\IndexProductCommand: async
         buses:
